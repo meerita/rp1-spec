@@ -68,8 +68,10 @@ Every fixture is a JSON object carrying all eight fields:
 | `input` | object | what the fixture offers |
 | `expect` | object | the outcome the contract requires |
 
-Section titles are unique across the document set, so a `clause` value
-names one section.
+A `clause` value is the title of a section that binds a rule. Every such
+title is unique across the document set, so a `clause` value names one
+section. `Scope` is the one title the set repeats, and no Scope section
+binds a rule, so no fixture carries it.
 
 `provenance` carries one value in this corpus. A fixture whose provenance
 cannot be stated is removed rather than kept.

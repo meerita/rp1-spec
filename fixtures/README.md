@@ -79,8 +79,24 @@ cannot be stated is removed rather than kept.
 | Direction | `input` carries |
 |---|---|
 | `decode` | `bytes`, the byte string offered to the decoder |
-| `encode` | `fields`, an object naming each field the encoder is given, under the field names of the section named in `clause` |
+| `encode` | `fields`, an object naming each field the encoder is given |
 | `both` | `fields`, with the same meaning as for `encode` |
+
+`input` carries one further member:
+
+| Member | Presence | Meaning |
+|---|---|---|
+| `role` | when the outcome depends on which peer reads the bytes | `client` or `server`, the peer the bytes are offered to |
+
+A field name is the name the specification gives the field, with each
+space written as an underscore, so `metadata length` is `metadata_length`.
+A field's value is the value a decoder extracts, not the name the registry
+gives it: a fixture states `"kind": 2`, and the registry is what says that
+2 is RESPONSE.
+
+Some outcomes depend on state a connection holds rather than on the bytes
+of one frame. A fixture that states no such state asserts its outcome for
+a receiver at which every check reading connection state passes.
 
 ## Expected outcome
 

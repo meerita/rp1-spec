@@ -44,14 +44,20 @@ server version     a release of the RP-1 server
 
 ## Contributing
 
-Contributions are welcome. A change to published normative text carries
-a compatibility classification, and a change that alters what a
-conforming peer emits or accepts updates its fixtures in the same change.
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md), which
+states the requirement levels a clause uses, the classification every
+change carries, and the rule that a fixture is derived from the contract
+rather than captured from an implementation.
+
+[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) applies to every interaction in
+this repository.
 
 ## Security
 
-Report a suspected protocol-level security defect privately rather than
-in a public issue.
+A security problem here is a defect in the contract, not in a program: a
+clause an implementation cannot satisfy safely. See
+[SECURITY.md](SECURITY.md). Report it privately rather than in a public
+issue.
 
 ## License
 

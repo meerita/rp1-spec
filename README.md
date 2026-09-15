@@ -11,10 +11,19 @@ It is not documentation of the RP-1 server, and it is not an SDK guide.
 
 ## Status
 
-Early development. No protocol version is published yet.
+Revision v0.1.0 defines protocol version 0 at the framing and codec
+surface. Every document of that revision carries the status `draft`.
 
-Do not implement against this repository until a revision is tagged and
-its documents are marked stable.
+From that revision an implementer writes an encoder and a decoder for
+every frame kind it assigns, and receiver behavior for every input it
+permits. The revision defines no handshake, no negotiation, no
+capability, no operation, and no conformance layer, so what it produces
+is a codec: it is not a client, and it does not interoperate with a
+deployed peer.
+
+A draft contract changes without the treatment a classified change
+carries. An implementation built against revision v0.1.0 is built at the
+implementer's own risk, and pins the revision it was built against.
 
 ## Scope
 

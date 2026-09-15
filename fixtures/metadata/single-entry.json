@@ -11,7 +11,7 @@
       "kind": 2,
       "flags": 0,
       "code": 0,
-      "request_id": 1,
+      "request_id": "1",
       "metadata": [
         {
           "identifier": 1,
@@ -31,7 +31,7 @@
       "code": 0,
       "metadata_length": 6,
       "payload_length": 0,
-      "request_id": 1,
+      "request_id": "1",
       "metadata": [
         {
           "identifier": 1,

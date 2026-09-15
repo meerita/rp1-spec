@@ -53,6 +53,39 @@ A byte string of length zero is the empty string.
 ""                      no bytes
 ```
 
+## Integer form
+
+Every integer this corpus carries is a JSON number, with one exception: a
+field whose wire type is `u64` is a JSON string of decimal digits.
+
+```text
+"request_id": "1"
+"request_id": "18446744073709551615"
+```
+
+The string holds the field's value in decimal, with no sign, no
+separators, and no leading zero except for the value zero itself. The
+form follows the type of the field and never the magnitude of the value,
+so a loader maps the field to its 64-bit integer type once, from the
+field's name, and never branches on what one fixture happens to carry.
+
+A JSON number cannot carry such a field. The format lets a reader set its
+own limits on the range and the precision it accepts, and a reader that
+represents a number as an IEEE 754 binary64 double agrees exactly on the
+integers from -(2^53)+1 to (2^53)-1 and on no others. The maximum request
+id, 18446744073709551615, is far above that range: such a reader loads it
+as 18446744073709551616, which is not a value the field can carry, and
+the load reports no error.
+
+Protocol version 0 types two fields as `u64`: the `request id` of the
+frame header, and the `logical length` of the value held outside memory
+result code. The two members whose values are request ids, `in_flight`
+and `retires`, take the same form.
+
+Every other integer this corpus carries is a number. None of them can
+exceed the maximum frame size, which bounds every length, every offset
+and every count the corpus states.
+
 ## Fields
 
 Every fixture is a JSON object carrying all eight fields:
@@ -89,7 +122,7 @@ cannot be stated is removed rather than kept.
 | Member | Presence | Meaning |
 |---|---|---|
 | `role` | when the outcome depends on which peer reads the bytes | `client` or `server`, the peer the bytes are offered to |
-| `in_flight` | when the outcome depends on which requests are in flight at the receiver | the request ids in flight at the receiver, as an array of numbers, in the order those requests entered flight |
+| `in_flight` | when the outcome depends on which requests are in flight at the receiver | the request ids in flight at the receiver, as an array, in the order those requests entered flight |
 
 A field name is the name the specification gives the field, with each
 space written as an underscore, so `metadata length` is `metadata_length`.
@@ -150,7 +183,7 @@ members of `expect` are present.
 | `fields` | always | every field value a conforming decoder extracts |
 | `bytes_consumed` | on `decode` and `both` | the number of input bytes the frame occupies |
 | `bytes` | on `encode` and `both` | the exact byte string a conforming encoder produces |
-| `retires` | when `input` states `in_flight` | the request id the frame retires at the receiver, or `0` when it retires none |
+| `retires` | when `input` states `in_flight` | the request id the frame retires at the receiver, or `"0"` when it retires none |
 
 A fixture whose direction is `both` asserts both halves: encoding
 `input.fields` produces `expect.bytes`, and decoding `expect.bytes`
@@ -178,14 +211,14 @@ follows.
 | Member | Presence | Meaning |
 |---|---|---|
 | `bytes_required` | always | the total number of bytes the receiver requires before it holds a frame |
-| `retires` | when `input` states `in_flight` | the request id the frame retires at the receiver, always `0` here |
+| `retires` | when `input` states `in_flight` | the request id the frame retires at the receiver, always `"0"` here |
 
 An incomplete frame is a decoder state and not a failure, so an
 `incomplete` fixture carries no class and no scope. The receiver reads
 more bytes.
 
-`retires` is `0` on every `incomplete` fixture, because bytes that are not
-a frame name no request. The member is carried rather than left implicit
+`retires` is `"0"` on every `incomplete` fixture, because bytes that are
+not a frame name no request. The member is carried rather than left implicit
 so that a receiver which retires a request on a partial frame fails the
 fixture instead of passing it.
 

@@ -9,8 +9,8 @@
     "bytes": "0002000000000000000000000b00000000000000",
     "role": "client",
     "in_flight": [
-      6,
-      11
+      "6",
+      "11"
     ]
   },
   "expect": {
@@ -22,9 +22,9 @@
       "code": 0,
       "metadata_length": 0,
       "payload_length": 0,
-      "request_id": 11
+      "request_id": "11"
     },
     "bytes_consumed": 20,
-    "retires": 11
+    "retires": "11"
   }
 }

@@ -19,12 +19,12 @@
       "code": 12,
       "metadata_length": 0,
       "payload_length": 2,
-      "request_id": 0,
+      "request_id": "0",
       "detail_length": 0,
       "detail_bytes": "",
       "text": ""
     },
     "bytes_consumed": 22,
-    "retires": 0
+    "retires": "0"
   }
 }

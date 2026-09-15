@@ -18,7 +18,7 @@
       "code": 4,
       "metadata_length": 4,
       "payload_length": 2,
-      "request_id": 4,
+      "request_id": "4",
       "metadata": [
         {
           "identifier": 17,

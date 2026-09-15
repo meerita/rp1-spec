@@ -18,7 +18,7 @@
       "code": 3,
       "metadata_length": 0,
       "payload_length": 5,
-      "request_id": 1,
+      "request_id": "1",
       "detail_length": 0,
       "detail_bytes": "",
       "text": "fffefd"

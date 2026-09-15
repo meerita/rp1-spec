@@ -18,7 +18,7 @@
       "code": 0,
       "metadata_length": 0,
       "payload_length": 0,
-      "request_id": 1
+      "request_id": "1"
     },
     "bytes_consumed": 20
   }

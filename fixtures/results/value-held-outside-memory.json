@@ -1,6 +1,6 @@
 {
   "id": "results/value-held-outside-memory",
-  "revision": "v0.1.0",
+  "revision": "v0.1.1",
   "protocol_version": 0,
   "clause": "Value held outside memory",
   "direction": "decode",

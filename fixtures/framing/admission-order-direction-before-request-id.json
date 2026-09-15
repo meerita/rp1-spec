@@ -1,6 +1,6 @@
 {
   "id": "framing/admission-order-direction-before-request-id",
-  "revision": "v0.1.0",
+  "revision": "v0.1.1",
   "protocol_version": 0,
   "clause": "Frame Admission Order",
   "direction": "decode",

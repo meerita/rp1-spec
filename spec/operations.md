@@ -2,7 +2,7 @@
 title: Operations
 description: Where an opcode appears in a frame, the whole domain of the opcode space, what a receiver does with an opcode protocol version 0 does not assign, and what a later revision does when it assigns one.
 protocol_version: 0
-revision: v0.1.0
+revision: v0.1.1
 status: draft
 order: 5
 ---
@@ -16,7 +16,7 @@ frame, the whole domain of the field that carries it, what a receiver does
 with an opcode this revision does not assign, and what a later revision
 does when it assigns one.
 
-It assigns no opcode. Protocol version 0 assigns none at revision v0.1.0
+It assigns no opcode. Protocol version 0 assigns none at revision v0.1.1
 and reserves the whole space. What this revision publishes is the space
 and the rule it carries, so that a later revision assigns an opcode
 without invalidating a peer built on this one.
@@ -36,7 +36,7 @@ The whole domain is covered here:
 |---|---|
 | `0x0000..0xFFFF` | reserved |
 
-Protocol version 0 assigns no opcode at revision v0.1.0. Every value of
+Protocol version 0 assigns no opcode at revision v0.1.1. Every value of
 the field is reserved, `0x0000` on the same terms as every other, and no
 value is reserved as never valid.
 

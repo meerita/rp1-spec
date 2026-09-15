@@ -1,6 +1,6 @@
 {
   "id": "header/flags-all-bits-set",
-  "revision": "v0.1.0",
+  "revision": "v0.1.1",
   "protocol_version": 0,
   "clause": "Flags",
   "direction": "decode",

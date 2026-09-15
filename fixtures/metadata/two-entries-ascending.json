@@ -1,0 +1,53 @@
+{
+  "id": "metadata/two-entries-ascending",
+  "revision": "v0.1.0",
+  "protocol_version": 0,
+  "clause": "Entry Order",
+  "direction": "both",
+  "provenance": "derived-from-specification",
+  "input": {
+    "fields": {
+      "version": 0,
+      "kind": 2,
+      "flags": 0,
+      "code": 0,
+      "request_id": 1,
+      "metadata": [
+        {
+          "identifier": 1,
+          "value": ""
+        },
+        {
+          "identifier": 2,
+          "value": "ff"
+        }
+      ],
+      "payload": ""
+    },
+    "role": "client"
+  },
+  "expect": {
+    "outcome": "success",
+    "fields": {
+      "version": 0,
+      "kind": 2,
+      "flags": 0,
+      "code": 0,
+      "metadata_length": 9,
+      "payload_length": 0,
+      "request_id": 1,
+      "metadata": [
+        {
+          "identifier": 1,
+          "value": ""
+        },
+        {
+          "identifier": 2,
+          "value": "ff"
+        }
+      ]
+    },
+    "bytes": "00020000000009000000000001000000000000000100000002000100ff",
+    "bytes_consumed": 29
+  }
+}

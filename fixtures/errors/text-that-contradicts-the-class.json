@@ -1,26 +1,28 @@
 {
-  "id": "results/value-held-outside-memory",
+  "id": "errors/text-that-contradicts-the-class",
   "revision": "v0.1.1",
   "protocol_version": 0,
-  "clause": "Value held outside memory",
+  "clause": "The ERROR Frame Payload",
   "direction": "decode",
   "provenance": "derived-from-specification",
   "input": {
-    "bytes": "00020000040000000800000001000000000000000010000000000000",
+    "bytes": "000300000300000004000000010000000000000000006f6b",
     "role": "client"
   },
   "expect": {
     "outcome": "success",
     "fields": {
       "version": 0,
-      "kind": 2,
+      "kind": 3,
       "flags": 0,
-      "code": 4,
+      "code": 3,
       "metadata_length": 0,
-      "payload_length": 8,
+      "payload_length": 4,
       "request_id": 1,
-      "logical_length": 4096
+      "detail_length": 0,
+      "detail_bytes": "",
+      "text": "6f6b"
     },
-    "bytes_consumed": 28
+    "bytes_consumed": 24
   }
 }

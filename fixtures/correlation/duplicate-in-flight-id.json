@@ -1,6 +1,6 @@
 {
   "id": "correlation/duplicate-in-flight-id",
-  "revision": "v0.1.0",
+  "revision": "v0.1.1",
   "protocol_version": 0,
   "clause": "A request id already in flight",
   "direction": "decode",

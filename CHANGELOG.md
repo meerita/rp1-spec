@@ -19,6 +19,64 @@ always produces a new revision.
 Each entry states what changed, whether a peer built against the previous
 revision still conforms, and what such a peer must do when it does not.
 
+## [0.1.1]
+
+Classification: clarification. No requirement is added, removed or
+altered. A peer built against revision v0.1.0 conforms to this revision
+unchanged and has nothing to do.
+
+This revision closes the distance between what the contract requires and
+what its corpus can check. Three requirements of v0.1.0 had no fixture
+that could fail against them. Two now do, and the third is stated as a
+limitation of the contract rather than left for a reader to discover.
+
+### Added
+
+- `errors/text-that-is-not-valid-utf8`. The text region of an ERROR frame
+  carries bytes no UTF-8 decoder accepts, and the expected outcome is the
+  frame decoded and its error class delivered. The ERROR Frame Payload
+  requires that a receiver does not parse the text, and no fixture could
+  fail against a receiver that did.
+- `errors/text-that-contradicts-the-class`. The text reads "ok" on a frame
+  carrying the unsupported operation class. It differs from
+  `errors/detail-length-zero-with-text` only in the text region and in the
+  payload length that measures it, and both expect the same class, the
+  same scope and the same fields. A receiver that branches on the content
+  of the text answers the two differently.
+- `correlation/partial-frame-retires-no-request`. Nineteen bytes of a
+  frame that would name a request the receiver holds in flight, expecting
+  the incomplete state, the bytes the receiver requires, and that it
+  retires nothing. A Connection That Ends requires that bytes which are
+  not a frame retire no request.
+- A sixth known limitation in Scope and Status, naming the one requirement
+  of this revision that no fixture reaches: that an initiator concludes
+  nothing from a connection ending about whether the work a request named
+  took effect. A fixture offers bytes and states the outcome a receiver
+  produces from them, and this requirement binds what an initiator
+  concludes when no bytes arrive at all. The limitation states what the
+  contract provides in its place, what an implementer does, and what would
+  remove it.
+
+### Changed
+
+- The corpus form states that an `incomplete` fixture carries `retires`
+  when its input states `in_flight`, always `0`. The member is carried
+  rather than left implicit so that a receiver which retires a request on
+  a partial frame fails the fixture instead of passing it. No fixture of
+  the previous revision is altered by it: none of the five `incomplete`
+  fixtures states `in_flight`.
+- Every normative document and every fixture states revision v0.1.1. The
+  corpus of revision v0.1.0 is preserved at the tag that published it.
+- The corpus is 66 fixtures.
+
+### Unchanged
+
+Every clause of protocol version 0. The frame header, the frame kinds, the
+admission order, the metadata region, correlation, the opcode space, the
+result codes, the error classes, the bounds and the extension policy are
+byte for byte the contract revision v0.1.0 published. Every document still
+carries the status `draft`.
+
 ## [0.1.0]
 
 The first revision of this specification. It defines protocol version 0

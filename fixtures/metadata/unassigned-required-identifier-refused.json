@@ -1,6 +1,6 @@
 {
   "id": "metadata/unassigned-required-identifier-refused",
-  "revision": "v0.1.0",
+  "revision": "v0.1.1",
   "protocol_version": 0,
   "clause": "The Required Range",
   "direction": "decode",

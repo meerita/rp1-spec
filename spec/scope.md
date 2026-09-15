@@ -1,8 +1,8 @@
 ---
 title: Scope and Status
-description: What revision v0.1.0 of protocol version 0 defines and does not define, with the requirement levels, version axes, terminology, and limitations of the document set.
+description: What revision v0.1.1 of protocol version 0 defines and does not define, with the requirement levels, version axes, terminology, and limitations of the document set.
 protocol_version: 0
-revision: v0.1.0
+revision: v0.1.1
 status: draft
 order: 1
 ---
@@ -12,7 +12,7 @@ order: 1
 ## Scope
 
 This document set defines protocol version 0 of the RP-1 Native Protocol,
-at revision v0.1.0.
+at revision v0.1.1.
 
 It defines the framing and codec surface: how a frame is laid out on the
 wire, what every value a frame carries means, and how a receiver admits or
@@ -60,7 +60,7 @@ so an implementation of it does not interoperate with a peer and is not a
 client. Known Limitations states what that costs and what an implementer
 does in the meantime.
 
-Revision v0.1.0 publishes the documents of this set and the fixture corpus
+Revision v0.1.1 publishes the documents of this set and the fixture corpus
 that accompanies them. A fixture carries the same authority as the prose
 it exercises. Supporting material states that it is not normative.
 
@@ -153,6 +153,10 @@ revision defines a request being made or answered. An implementation of
 this revision is a codec: it is not a client, and it does not interoperate
 with a deployed peer.
 
+The first five limitations below follow from that. The last does not: it
+states which requirement of this revision no fixture of its corpus can
+fail against.
+
 ### No handshake
 
 What is limited: this revision defines no exchange that opens a
@@ -234,3 +238,28 @@ revision.
 
 What would remove it: a revision that defines the conformance layers, what
 each one requires, and the form a conformance claim takes.
+
+### No fixture for a conclusion an initiator draws
+
+What is limited: one requirement of this revision has no fixture that can
+fail against it. A Connection That Ends binds an initiator not to conclude
+from a connection ending that the work a request named took effect, and
+not to conclude that it did not. A fixture offers bytes and states the
+outcome a receiver produces from them. This requirement binds what an
+initiator concludes when no bytes arrive at all, and no byte sequence
+distinguishes an initiator that obeys it from one that does not.
+
+What this contract provides: every requirement whose violation changes
+what a peer emits, accepts or refuses carries a fixture that can fail
+against it. The corpus also covers the observable half of this one: bytes
+that are not a frame retire no request, and a fixture states that for a
+receiver holding a partial frame with a request in flight.
+
+What an implementer does: implements the requirement from the prose, and
+does not read a complete pass of this corpus as evidence of conforming to
+it. A request that ends with no terminal frame received no error class, so
+it received no statement about a mutation, and an initiator that reports
+one is wrong whatever the corpus says.
+
+What would remove it: a revision that defines the conformance layers, and
+with them how a requirement no fixture reaches is claimed and checked.

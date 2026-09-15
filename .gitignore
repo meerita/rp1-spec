@@ -1,0 +1,35 @@
+# AI / agent workspace
+AGENTS.md
+CLAUDE.md
+.agents/
+.claude/
+
+# Internal work artifacts
+probes/
+runs/
+foundation/
+
+# Local scratch
+tmp/
+
+# Generated output
+build/
+dist/
+site/
+node_modules/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Editors
+.idea/
+.vscode/
+.zed/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store

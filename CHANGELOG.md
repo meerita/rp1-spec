@@ -34,6 +34,8 @@ here is normative.
   levels a clause uses, the change classification a pull request carries,
   and the rule that a fixture is derived from the contract rather than
   captured from an implementation.
+- The Developer Certificate of Origin 1.1, and a check that refuses a
+  pull request whose commits carry no matching sign-off.
 - An ignore set covering the local working corpus.
 
 No contract is defined in this state. Do not implement against this

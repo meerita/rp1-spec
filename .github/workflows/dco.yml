@@ -1,0 +1,65 @@
+name: DCO
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  sign-off:
+    name: Every commit carries a sign-off
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+
+          status=0
+          commits="$(git rev-list --no-merges "$BASE..$HEAD")"
+
+          if [ -z "$commits" ]; then
+            echo "No non-merge commits to check."
+            exit 0
+          fi
+
+          for sha in $commits; do
+            author="$(git show -s --format='%an <%ae>' "$sha")"
+            subject="$(git show -s --format='%s' "$sha")"
+            expected="Signed-off-by: $author"
+
+            if git show -s --format='%B' "$sha" | grep -qxF "$expected"; then
+              echo "ok  $(echo "$sha" | cut -c1-7)  $subject"
+              continue
+            fi
+
+            status=1
+            if git show -s --format='%B' "$sha" | grep -qE '^Signed-off-by: '; then
+              echo "::error::${sha} carries a sign-off that does not match its author."
+              echo "  author:   $author"
+              echo "  expected: $expected"
+              git show -s --format='%B' "$sha" | grep -E '^Signed-off-by: ' | sed 's/^/  found:    /'
+            else
+              echo "::error::${sha} carries no Signed-off-by trailer."
+              echo "  author:   $author"
+              echo "  expected: $expected"
+            fi
+          done
+
+          if [ "$status" -ne 0 ]; then
+            echo
+            echo "Add the trailer with 'git commit -s'."
+            echo "To fix the last commit:        git commit --amend -s --no-edit"
+            echo "To fix every commit on a branch: git rebase --signoff $BASE"
+            echo "The DCO file in the repository root states what the trailer certifies."
+          fi
+
+          exit "$status"

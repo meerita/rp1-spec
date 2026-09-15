@@ -225,6 +225,47 @@ are.
 For a security-relevant defect in the contract, follow
 [SECURITY.md](SECURITY.md) instead of opening a public issue.
 
+## Sign your work
+
+Every commit carries a `Signed-off-by` trailer. Git adds it for you:
+
+```sh
+git commit -s
+```
+
+```text
+Signed-off-by: Your Name <your.email@example.com>
+```
+
+Use your real name and the email address you commit with. The trailer
+must match the commit author.
+
+The trailer certifies the
+[Developer Certificate of Origin](DCO), version 1.1: that you wrote the
+contribution, or that it is based on work you have the right to submit
+under this repository's licence, or that someone who certified the same
+gave it to you unmodified.
+
+This matters more for a specification than for a program. The half of
+Apache-2.0 that protects an implementer is its patent grant, and that
+grant only holds if whoever made the contribution was entitled to make
+it. The sign-off is the record that they said so.
+
+A pull request whose commits lack the trailer does not merge. To fix the
+last commit:
+
+```sh
+git commit --amend -s --no-edit
+```
+
+To fix every commit on a branch, where `master` is where it started:
+
+```sh
+git rebase --signoff master
+```
+
+There is no separate agreement to sign and nothing to send by email.
+
 ## Licensing of contributions
 
 Unless you explicitly state otherwise, any contribution you intentionally

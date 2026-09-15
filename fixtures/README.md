@@ -140,6 +140,26 @@ correlates a frame by the order requests were sent rather than by the
 request id the frame carries. The order carries no other meaning, and an
 empty array states that no request is in flight at the receiver.
 
+## What an encode fixture offers
+
+The input of a fixture whose direction is `encode` or `both` is a frame a
+peer may send at the revision the fixture represents. Every field value
+that input names is one the contract permits its sender to put on the
+wire. A frame the contract forbids a peer to send is stated by a decode
+fixture instead, which carries what a receiver does when a peer sends it
+regardless.
+
+The encode direction exists so that two implementations write the same
+bytes for a frame both are permitted to write. Bytes pinned for a frame
+no conforming peer may send would state an agreement no implementation
+can ever exercise, and the same corpus refuses those bytes on the decode
+side.
+
+The rule narrows with the revision that carries it. A value a revision
+leaves unassigned is a value no peer of that revision may send, so the
+frames its encode fixtures state are the frames its own assignments
+permit.
+
 ## Entries of a region
 
 A field whose value is a region of entries is carried as a JSON array, one

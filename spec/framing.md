@@ -110,7 +110,8 @@ it.
 ### request id
 
 `request id` names the request a frame belongs to. Request Identity
-states its valid values, its reserved value, and which peer allocates it.
+states which peer allocates it and the scope its uniqueness runs over, and
+The Reserved Request Id states its valid values and its reserved value.
 
 The field carries no alignment guarantee. A frame begins at an arbitrary
 offset in a receive buffer, so no padding in this layout could produce a
@@ -228,8 +229,8 @@ requirement, names the peer it binds, and states its consequence.
     8  the metadata region does not fill exactly    malformed request      connection-fatal
     9  kind travels from the wrong direction        protocol violation     connection-fatal
    10  request id 0 on a kind that names a request  protocol violation     connection-fatal
-   11  a duplicate in-flight request id             protocol violation     connection-fatal
-   12  a request id the receiver does not hold      protocol violation     connection-fatal
+   11  a frame opening a request already in flight  protocol violation     connection-fatal
+   12  a frame naming a request not in flight       protocol violation     connection-fatal
    13  code unassigned for the kind
          REQUEST                                    unsupported operation  request-scoped
          RESPONSE                                   protocol violation     connection-fatal

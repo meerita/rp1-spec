@@ -70,17 +70,18 @@ the class the client read, and no further answer to it follows.
 
 ### The request id an ERROR frame carries
 
-A peer MUST NOT send an ERROR frame that carries a request-scoped error
-class and request id 0. A receiver that meets one MUST treat the frame as
-a protocol violation and close the connection.
+An ERROR frame carrying a request-scoped error class names the request it
+fails, and it always names one. A request-scoped class states that one
+request failed and that the connection keeps serving, so a frame carrying
+that class and naming no request states nothing: there is no request to
+retire and nothing to report.
 
-A request-scoped class states that one request failed and that the
-connection keeps serving. Carrying no request id, it states nothing: there
-is no request to retire and nothing to report.
+An ERROR frame carrying a connection-fatal class names the request the
+failure belongs to when its sender can attribute the failure to one, and
+names none when it cannot.
 
-An ERROR frame carrying a connection-fatal class carries the request id of
-the request the failure belongs to when its sender can attribute the
-failure to one, and request id 0 when it cannot.
+The Reserved Request Id states what a peer may not send when a frame names
+a request, and what a receiver does when it meets one.
 
 ## The ERROR Frame Payload
 

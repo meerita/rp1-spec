@@ -82,11 +82,12 @@ cannot be stated is removed rather than kept.
 | `encode` | `fields`, an object naming each field the encoder is given |
 | `both` | `fields`, with the same meaning as for `encode` |
 
-`input` carries one further member:
+`input` carries two further members:
 
 | Member | Presence | Meaning |
 |---|---|---|
 | `role` | when the outcome depends on which peer reads the bytes | `client` or `server`, the peer the bytes are offered to |
+| `in_flight` | when the outcome depends on which requests are in flight at the receiver | the request ids in flight at the receiver, as an array of numbers, in the order those requests entered flight |
 
 A field name is the name the specification gives the field, with each
 space written as an underscore, so `metadata length` is `metadata_length`.
@@ -95,8 +96,14 @@ gives it: a fixture states `"kind": 2`, and the registry is what says that
 2 is RESPONSE.
 
 Some outcomes depend on state a connection holds rather than on the bytes
-of one frame. A fixture that states no such state asserts its outcome for
-a receiver at which every check reading connection state passes.
+of one frame. `in_flight` is how a fixture states that state. A fixture
+that states no such state asserts its outcome for a receiver at which
+every check reading connection state passes.
+
+`in_flight` is ordered so that a fixture can fail against a receiver that
+correlates a frame by the order requests were sent rather than by the
+request id the frame carries. The order carries no other meaning, and an
+empty array states that no request is in flight at the receiver.
 
 ## Entries of a region
 
@@ -131,6 +138,7 @@ members of `expect` are present.
 | `fields` | always | every field value a conforming decoder extracts |
 | `bytes_consumed` | on `decode` and `both` | the number of input bytes the frame occupies |
 | `bytes` | on `encode` and `both` | the exact byte string a conforming encoder produces |
+| `retires` | when `input` states `in_flight` | the request id the frame retires at the receiver, or `0` when it retires none |
 
 A fixture whose direction is `both` asserts both halves: encoding
 `input.fields` produces `expect.bytes`, and decoding `expect.bytes`

@@ -104,6 +104,9 @@ ERROR frame whose payload is shorter than two bytes, or whose
 `detail length` exceeds the bytes that follow it, MUST treat the frame as
 a malformed request and close the connection.
 
+This check runs on an admitted frame. Checks that follow the order states
+where it sits relative to the fifteen steps.
+
 The text is not contractual. A receiver MUST NOT parse the text. A
 receiver MUST NOT depend on its content. No requirement of this contract
 constrains the text, so a peer that branches on it is not interoperable

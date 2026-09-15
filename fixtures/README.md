@@ -126,6 +126,16 @@ the two length fields are present, because a decoder reads them. A fixture
 whose direction is `both` therefore names a different field set on each
 side: what an encoder is handed, and what a decoder extracts.
 
+## Payload fields
+
+`fields` carries the header fields of a frame, and the fields of its
+payload when a section of the specification defines a layout for that
+payload. A payload the contract leaves opaque contributes no member, and
+`payload_length` is then the whole of what the fixture states about it.
+
+A field of a payload is named by the same rule as a header field, and a
+byte region of a payload is written in the byte form above.
+
 ## Expected outcome
 
 `expect.outcome` carries one of three values. Each one fixes which other

@@ -24,7 +24,10 @@
           "identifier": 17,
           "value": ""
         }
-      ]
+      ],
+      "detail_length": 0,
+      "detail_bytes": "",
+      "text": ""
     },
     "bytes_consumed": 26
   }

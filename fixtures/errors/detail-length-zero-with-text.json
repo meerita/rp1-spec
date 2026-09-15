@@ -1,14 +1,13 @@
 {
-  "id": "correlation/error-frame-with-the-reserved-id-and-a-fatal-class",
+  "id": "errors/detail-length-zero-with-text",
   "revision": "v0.1.0",
   "protocol_version": 0,
-  "clause": "The Reserved Request Id",
+  "clause": "The ERROR Frame Payload",
   "direction": "decode",
   "provenance": "derived-from-specification",
   "input": {
-    "bytes": "000300000c0000000200000000000000000000000000",
-    "role": "client",
-    "in_flight": []
+    "bytes": "00030000030000000d00000001000000000000000000756e737570706f72746564",
+    "role": "client"
   },
   "expect": {
     "outcome": "success",
@@ -16,15 +15,14 @@
       "version": 0,
       "kind": 3,
       "flags": 0,
-      "code": 12,
+      "code": 3,
       "metadata_length": 0,
-      "payload_length": 2,
-      "request_id": 0,
+      "payload_length": 13,
+      "request_id": 1,
       "detail_length": 0,
       "detail_bytes": "",
-      "text": ""
+      "text": "756e737570706f72746564"
     },
-    "bytes_consumed": 22,
-    "retires": 0
+    "bytes_consumed": 33
   }
 }

@@ -255,6 +255,22 @@ A receiver MUST NOT wait for the bytes of a frame an earlier step has
 already refused. Steps 2 to 6 decide from the header alone, so a frame
 refused at any of them is refused with no byte of its body in hand.
 
+### Checks that follow the order
+
+A frame that passes all fifteen steps is admitted. The order decides
+admission and nothing after it.
+
+A section of this document set that defines a layout for a frame's payload
+states its own checks over that payload, and those checks run on an
+admitted frame, after step 15. The first failure still wins: a frame that
+violates a step of the order and also violates a payload check produces
+the class and the scope of the step, because the step decided first.
+
+A receiver reaches no payload check on a frame the order refused. Steps 13
+to 15 refuse a frame for what its `code` and its metadata region carry, so
+a frame refused at any of them is refused with its payload held and
+uninterpreted.
+
 ### Where a failure stops being fatal
 
 Steps 1 to 8 decide from the header and the frame's own bytes. Steps 9 to

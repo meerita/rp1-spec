@@ -1,6 +1,6 @@
 {
   "id": "correlation/error-frame-with-the-reserved-id-and-a-request-scoped-class",
-  "revision": "v0.1.1",
+  "revision": "v0.1.2",
   "protocol_version": 0,
   "clause": "The Reserved Request Id",
   "direction": "decode",

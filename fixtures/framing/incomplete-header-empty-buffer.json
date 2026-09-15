@@ -1,6 +1,6 @@
 {
   "id": "framing/incomplete-header-empty-buffer",
-  "revision": "v0.1.1",
+  "revision": "v0.1.2",
   "protocol_version": 0,
   "clause": "Frame Admission Order",
   "direction": "decode",

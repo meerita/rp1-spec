@@ -1,8 +1,8 @@
 ---
 title: Extension and Version Policy
-description: The property that decides whether a change invalidates a peer built on an earlier revision, the treatment every kind of change carries, the growth treatment of every value space protocol version 0 defines at revision v0.1.1, and the fixture that proves each receiver rule those treatments follow from.
+description: The property that decides whether a change invalidates a peer built on an earlier revision, the treatment every kind of change carries, the growth treatment of every value space protocol version 0 defines at revision v0.1.2, and the fixture that proves each receiver rule those treatments follow from.
 protocol_version: 0
-revision: v0.1.1
+revision: v0.1.2
 status: draft
 order: 9
 ---

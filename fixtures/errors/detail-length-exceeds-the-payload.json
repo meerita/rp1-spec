@@ -1,6 +1,6 @@
 {
   "id": "errors/detail-length-exceeds-the-payload",
-  "revision": "v0.1.1",
+  "revision": "v0.1.2",
   "protocol_version": 0,
   "clause": "The ERROR Frame Payload",
   "direction": "decode",

@@ -1,6 +1,6 @@
 {
   "id": "correlation/response-naming-an-id-not-in-flight",
-  "revision": "v0.1.1",
+  "revision": "v0.1.2",
   "protocol_version": 0,
   "clause": "A request id not in flight",
   "direction": "decode",

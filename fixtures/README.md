@@ -178,10 +178,16 @@ follows.
 | Member | Presence | Meaning |
 |---|---|---|
 | `bytes_required` | always | the total number of bytes the receiver requires before it holds a frame |
+| `retires` | when `input` states `in_flight` | the request id the frame retires at the receiver, always `0` here |
 
 An incomplete frame is a decoder state and not a failure, so an
 `incomplete` fixture carries no class and no scope. The receiver reads
 more bytes.
+
+`retires` is `0` on every `incomplete` fixture, because bytes that are not
+a frame name no request. The member is carried rather than left implicit
+so that a receiver which retires a request on a partial frame fails the
+fixture instead of passing it.
 
 ## Shape
 

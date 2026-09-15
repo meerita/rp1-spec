@@ -55,7 +55,7 @@ implementation produces that row's outcome.
 
 | Step | The input | The class | The scope | The section that binds it | The fixtures |
 |---|---|---|---|---|---|
-| 1 | fewer than 20 bytes held | none, the receiver requires 20 bytes | none | The two steps that are not failures | `framing/incomplete-header-empty-buffer`, `framing/incomplete-header-one-byte-short` |
+| 1 | fewer than 20 bytes held | none, the receiver requires 20 bytes | none | The two steps that are not failures | `framing/incomplete-header-empty-buffer`, `framing/incomplete-header-one-byte-short`, `correlation/partial-frame-retires-no-request` |
 | 2 | `version` carries a value other than 0 | unsupported protocol version | connection-fatal | Frame Header | `header/version-field-is-one`, `header/version-field-at-maximum` |
 | 3 | `kind` carries a value this revision does not assign | protocol violation | connection-fatal | Frame Kinds | `header/frame-kind-reserved-zero`, `header/unassigned-frame-kind` |
 | 4 | the total length exceeds the maximum frame size | resource limit | connection-fatal | The maximum frame size | `limits/frame-one-byte-past-the-maximum`, `limits/metadata-length-exceeds-the-frame`, `framing/oversize-frame-refused-before-the-body-arrives` |

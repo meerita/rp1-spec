@@ -1,6 +1,6 @@
 ---
 title: Framing
-description: The byte order, the frame header, the frame kinds protocol version 0 assigns, the flags field, and the length arithmetic a receiver runs before it allocates.
+description: The byte order, the frame header, the frame kinds protocol version 0 assigns, the flags field, the length arithmetic a receiver runs before it allocates, and the order in which it admits a frame.
 protocol_version: 0
 revision: v0.1.0
 status: draft
@@ -13,8 +13,8 @@ order: 2
 
 This document defines the byte order of the whole protocol, the frame
 header, the frame kinds protocol version 0 assigns and the direction each
-one travels, the flags field, and the arithmetic a receiver runs to learn
-a frame's total length.
+one travels, the flags field, the arithmetic a receiver runs to learn a
+frame's total length, and the order in which a receiver admits a frame.
 
 It does not define what any value the `code` field carries means. Each of
 the three spaces that field draws from is defined in the section that owns
@@ -189,12 +189,87 @@ declares an enormous one, and admits a frame it is required to refuse.
 The two field widths are the whole of that proof. A receiver needs no
 value from the body and no connection state to run it.
 
-A receiver MUST check the total length against the bound that applies to
-the connection before it reserves memory proportional to any declared
-length. A frame whose total length exceeds that bound is a resource limit
-failure and the connection closes; Frame Size Limits states the bound and
-where it is enforced.
+A receiver MUST check the total length against the maximum frame size
+before it reserves memory proportional to any declared length. Frame Size
+Limits states that bound, the bytes it counts, and what a receiver does
+with a frame that exceeds it.
 
 The check reads the header alone. A receiver that reserved a buffer from a
 declared length before checking it would let an unauthenticated peer
 choose an allocation with 20 bytes.
+
+## Frame Admission Order
+
+A receiver runs the steps below in order on every frame it reads, and
+stops at the first one that decides. Two of them are not failures. Each of
+the other thirteen names the error class and the failure scope its failure
+produces, and step 13 names one pair for each frame kind.
+
+A receiver MUST run the checks in this order. A receiver that checks in a
+different order answers a frame violating two rules with the class of the
+later step, and two receivers that ordered the steps differently answer
+the same bytes with different classes.
+
+This section states the order. The section that owns each check states the
+requirement, names the peer it binds, and states its consequence.
+
+```text
+ step  condition                                    class                  scope
+    1  fewer than 20 bytes held                     none, requires 20 bytes
+    2  version is not 0                             unsupported protocol   connection-fatal
+                                                    version
+    3  kind is a value this revision does not       protocol violation     connection-fatal
+       assign
+    4  total length above the maximum frame size    resource limit         connection-fatal
+    5  flags is not zero                            protocol violation     connection-fatal
+    6  metadata length above the maximum metadata   malformed request      connection-fatal
+       size
+    7  fewer bytes held than the total length       none, requires the total length
+    8  the metadata region does not fill exactly    malformed request      connection-fatal
+    9  kind travels from the wrong direction        protocol violation     connection-fatal
+   10  request id 0 on a kind that names a request  protocol violation     connection-fatal
+   11  a duplicate in-flight request id             protocol violation     connection-fatal
+   12  a request id the receiver does not hold      protocol violation     connection-fatal
+   13  code unassigned for the kind
+         REQUEST                                    unsupported operation  request-scoped
+         RESPONSE                                   protocol violation     connection-fatal
+         ERROR                                      protocol violation     connection-fatal
+   14  metadata entries not strictly ascending      invalid argument       request-scoped
+   15  a required metadata identifier this          invalid argument       request-scoped
+       revision does not assign
+```
+
+Reporting a connection-fatal failure states how each peer reports a
+failure at a step whose scope is connection-fatal.
+
+### The two steps that are not failures
+
+Steps 1 and 7 state that the receiver does not hold a frame yet. Neither
+is a failure, neither produces an ERROR frame, and at either one the
+receiver reads more bytes. Each states the total number of bytes the
+receiver requires before it holds a frame: 20 bytes at step 1, and the
+total length the header states at step 7.
+
+A receiver MUST NOT wait for the bytes of a frame an earlier step has
+already refused. Steps 2 to 6 decide from the header alone, so a frame
+refused at any of them is refused with no byte of its body in hand.
+
+### Where a failure stops being fatal
+
+Steps 1 to 8 decide from the header and the frame's own bytes. Steps 9 to
+15 decide against the state the connection holds.
+
+Every failure at steps 1 to 8 is connection-fatal, because a receiver that
+cannot trust where the current frame ends cannot find the next one. From
+step 9 the frame boundary is known and the receiver still owes an answer,
+so a failure can be scoped to one request. Failure Scope states the
+principle that decides which scope a class carries.
+
+Steps 9 to 12 are connection-fatal although the frame boundary is known.
+Each of them leaves the receiver unable to say which request the frame
+belongs to, which is the other half of that principle.
+
+Step 13 is connection-fatal for a RESPONSE and for an ERROR frame, whose
+`code` is the whole of what the frame says, and request-scoped for a
+REQUEST frame, whose request the receiver can name and answer. The section
+that owns each of the three spaces states its own rule.

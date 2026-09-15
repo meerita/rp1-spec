@@ -153,6 +153,10 @@ revision defines a request being made or answered. An implementation of
 this revision is a codec: it is not a client, and it does not interoperate
 with a deployed peer.
 
+The first five limitations below follow from that. The last does not: it
+states which requirement of this revision no fixture of its corpus can
+fail against.
+
 ### No handshake
 
 What is limited: this revision defines no exchange that opens a
@@ -234,3 +238,28 @@ revision.
 
 What would remove it: a revision that defines the conformance layers, what
 each one requires, and the form a conformance claim takes.
+
+### No fixture for a conclusion an initiator draws
+
+What is limited: one requirement of this revision has no fixture that can
+fail against it. A Connection That Ends binds an initiator not to conclude
+from a connection ending that the work a request named took effect, and
+not to conclude that it did not. A fixture offers bytes and states the
+outcome a receiver produces from them. This requirement binds what an
+initiator concludes when no bytes arrive at all, and no byte sequence
+distinguishes an initiator that obeys it from one that does not.
+
+What this contract provides: every requirement whose violation changes
+what a peer emits, accepts or refuses carries a fixture that can fail
+against it. The corpus also covers the observable half of this one: bytes
+that are not a frame retire no request, and a fixture states that for a
+receiver holding a partial frame with a request in flight.
+
+What an implementer does: implements the requirement from the prose, and
+does not read a complete pass of this corpus as evidence of conforming to
+it. A request that ends with no terminal frame received no error class, so
+it received no statement about a mutation, and an initiator that reports
+one is wrong whatever the corpus says.
+
+What would remove it: a revision that defines the conformance layers, and
+with them how a requirement no fixture reaches is claimed and checked.

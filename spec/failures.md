@@ -53,6 +53,21 @@ A class carries one scope in every condition. A later revision that needs
 a condition scoped differently assigns a different class; it does not give
 an assigned class a second scope.
 
+### Reporting a request-scoped failure
+
+ERROR travels from the server to the client, so the two peers answer a
+request-scoped failure differently, and every rule in this document set
+that answers an error class for a request is read with this.
+
+A server that detects one answers with an ERROR frame carrying the class
+and keeps the connection open. The request id an ERROR frame carries
+states which request that frame names.
+
+A client that detects one fails the request it holds, sends no frame, and
+keeps the connection open, for the reason Reporting a connection-fatal
+failure states. Its answer is local: the request retires as a failure of
+the class the client read, and no further answer to it follows.
+
 ### The request id an ERROR frame carries
 
 A peer MUST NOT send an ERROR frame that carries a request-scoped error

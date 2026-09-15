@@ -98,6 +98,27 @@ Some outcomes depend on state a connection holds rather than on the bytes
 of one frame. A fixture that states no such state asserts its outcome for
 a receiver at which every check reading connection state passes.
 
+## Entries of a region
+
+A field whose value is a region of entries is carried as a JSON array, one
+object per entry, in wire order. The metadata region is the field
+`metadata`, and an absent region is the empty array.
+
+| Member | Meaning |
+|---|---|
+| `identifier` | the entry's identifier, as a number |
+| `value` | the entry's value bytes, as a byte string |
+
+An entry's `value length` is not carried. It is the length of `value`.
+
+An encoder is given what it cannot derive. On `encode` and `both`,
+`input.fields` carries `metadata` and `payload` and carries neither
+`metadata_length` nor `payload_length`, because an encoder computes both
+from what it was given. On `decode`, and in `expect.fields` everywhere,
+the two length fields are present, because a decoder reads them. A fixture
+whose direction is `both` therefore names a different field set on each
+side: what an encoder is handed, and what a decoder extracts.
+
 ## Expected outcome
 
 `expect.outcome` carries one of three values. Each one fixes which other

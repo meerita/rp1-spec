@@ -246,15 +246,18 @@ fixture instead of passing it.
 
 ## Shape
 
+A decode fixture offers bytes and states what a receiver produces from
+them.
+
 ```text
 Example, illustrative. A value in angle brackets stands for content a
 real fixture carries.
 
 {
-  "id": "header/minimum-legal-frame",
+  "id": "<the identifier, matching the file path>",
   "revision": "v0.1.2",
   "protocol_version": 0,
-  "clause": "Frame Header",
+  "clause": "<the title of the section that binds the rule>",
   "direction": "decode",
   "provenance": "derived-from-specification",
   "input": {
@@ -267,6 +270,51 @@ real fixture carries.
   }
 }
 ```
+
+A fixture whose direction is `both` hands an encoder the fields and
+states the bytes it writes, and those same bytes are what its decode half
+offers. This is `header/minimum-legal-frame`, in full:
+
+```json
+{
+  "id": "header/minimum-legal-frame",
+  "revision": "v0.1.2",
+  "protocol_version": 0,
+  "clause": "Frame Header",
+  "direction": "both",
+  "provenance": "derived-from-specification",
+  "input": {
+    "fields": {
+      "version": 0,
+      "kind": 2,
+      "flags": 0,
+      "code": 0,
+      "request_id": "1",
+      "metadata": [],
+      "payload": ""
+    },
+    "role": "client"
+  },
+  "expect": {
+    "outcome": "success",
+    "fields": {
+      "version": 0,
+      "kind": 2,
+      "flags": 0,
+      "code": 0,
+      "metadata_length": 0,
+      "payload_length": 0,
+      "request_id": "1"
+    },
+    "bytes": "0002000000000000000000000100000000000000",
+    "bytes_consumed": 20
+  }
+}
+```
+
+The encoder is handed no `metadata_length` and no `payload_length`, and
+the decoder reads both. The request id is a string on each side, because
+the field is a `u64`.
 
 ## Boundaries no frame of this revision reaches
 

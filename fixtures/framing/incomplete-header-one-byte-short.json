@@ -1,6 +1,6 @@
 {
   "id": "framing/incomplete-header-one-byte-short",
-  "revision": "v0.1.2",
+  "revision": "v0.2.0",
   "protocol_version": 0,
   "clause": "Frame Admission Order",
   "direction": "decode",

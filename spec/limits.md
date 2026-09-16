@@ -2,7 +2,7 @@
 title: Limits
 description: The maximum frame size and the maximum metadata size of protocol version 0, the bytes each one counts, where a receiver enforces them, and the failure a frame that exceeds one produces.
 protocol_version: 0
-revision: v0.1.2
+revision: v0.2.0
 status: draft
 order: 8
 ---

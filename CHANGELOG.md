@@ -19,6 +19,98 @@ always produces a new revision.
 Each entry states what changed, whether a peer built against the previous
 revision still conforms, and what such a peer must do when it does not.
 
+## [0.1.2]
+
+Classification: defect correction. No clause of protocol version 0
+changes, no wire value changes, and no fixture changes what it asserts
+about the wire. A peer built against revision v0.1.1 conforms to this
+revision unchanged and has nothing to do. An implementation that loads
+the fixture corpus updates its loader for one rule.
+
+This revision corrects the form of the corpus and publishes the header
+encode coverage the contract has listed since revision v0.1.0.
+
+The corpus carried every field value as a JSON number. A JSON number is
+interoperable only across the integers a reader represents exactly, and a
+reader that uses an IEEE 754 binary64 double agrees on -(2^53)+1 to
+(2^53)-1 and on no others. The maximum request id, 18446744073709551615,
+is far above that range: such a reader loaded it as a value the field
+cannot carry, and reported no error. The form could not state a legal
+value of a field this contract defines, so no fixture could reach the
+maximum of `request id`.
+
+The corpus also published two fixtures whose direction was `both`, and
+each offered an encoder a frame the contract forbids a peer to send.
+Protocol version 0 assigns no metadata identifier, and a peer MUST NOT
+send an entry whose identifier this revision does not assign.
+
+### Changed
+
+- A field whose wire type is `u64` is carried as a JSON string of decimal
+  digits, with no sign, no separators, and no leading zero except for
+  zero itself. The form follows the type of the field and never the
+  magnitude of the value, so `"1"` and `"18446744073709551615"` are both
+  strings and a loader maps the field to its 64-bit integer type once,
+  from the field's name. Protocol version 0 types two fields that way:
+  the `request id` of the frame header, and the `logical length` of the
+  value held outside memory result code. The two corpus members whose
+  values are request ids, `in_flight` and `retires`, take the same form.
+  Every other integer stays a number, and none of them can exceed the
+  maximum frame size. Twenty fixtures state a member in the new form, and
+  each one states the value it stated before.
+- The corpus form states that the input of a fixture whose direction is
+  `encode` or `both` is a frame a peer may send at the revision the
+  fixture represents, and that a frame the contract forbids a peer to
+  send is stated by a decode fixture instead.
+- `metadata/single-entry` and `metadata/two-entries-ascending` are decode
+  fixtures. Each keeps its identifier, its clause, its byte string and
+  every field it asserts, so the coverage of the entry layout and of
+  entry order is unchanged. Until a revision assigns a metadata
+  identifier, no fixture pins the bytes an encoder writes for an entry.
+- `header/minimum-legal-frame` states both directions. It pins the bytes
+  an encoder writes for the minimum legal value of every header field a
+  frame of this revision carries.
+- The corpus form states that an encoder handed a payload whose layout a
+  section defines is given that payload's fields rather than its bytes.
+- Every normative document and every fixture states revision v0.1.2. The
+  corpus of revision v0.1.1 is preserved at the tag that published it.
+- The corpus is 71 fixtures.
+
+### Added
+
+- `header/request-id-at-the-maximum`, a RESPONSE frame carrying
+  18446744073709551615, the highest valid request id. It is the fixture
+  the corpus form blocked, and it fails against an encoder or a decoder
+  that carries the field in any width below 64 bits.
+- `limits/the-widest-legal-frame`, a RESPONSE frame carrying the success
+  result code and a payload of 65516 bytes, whose total length is the
+  maximum frame size exactly. It fails against an encoder that caps its
+  output below the bound the contract permits.
+- `results/the-highest-assigned-result-code`, the value held outside
+  memory code, whose eight-byte payload carries a logical length at the
+  maximum of its width.
+- `errors/the-lowest-assigned-error-class`, a malformed request frame.
+  The class is connection-fatal and the frame names no request, so the
+  fixture also pins the reserved request id on a frame that may carry it.
+- `errors/the-highest-assigned-error-class`, a wrong type frame, which is
+  request-scoped and names the request it fails.
+- A statement in the corpus form of the three header field boundaries no
+  frame of this revision reaches: `kind` at REQUEST, because no opcode is
+  assigned; `code` at `0xFFFF`, unassigned in all three of the spaces the
+  field draws from; and `metadata length` above zero, because no metadata
+  identifier is assigned. Each one is forbidden by the contract rather
+  than unstatable by the corpus, each is covered on the decode side, and
+  each names the revision that removes it.
+
+### Unchanged
+
+Every clause of protocol version 0. The frame header, the frame kinds,
+the admission order, the metadata region, correlation, the opcode space,
+the result codes, the error classes, the bounds and the extension policy
+are byte for byte the contract revision v0.1.1 published, and the
+requirement levels are unchanged. Every document still carries the status
+`draft`.
+
 ## [0.1.1]
 
 Classification: clarification. No requirement is added, removed or

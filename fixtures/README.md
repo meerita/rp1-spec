@@ -174,7 +174,9 @@ object per entry, in wire order. The metadata region is the field
 An entry's `value length` is not carried. It is the length of `value`.
 
 An encoder is given what it cannot derive. On `encode` and `both`,
-`input.fields` carries `metadata` and `payload` and carries neither
+`input.fields` carries `metadata`, carries the payload as `payload` where
+the contract leaves it opaque and as the payload's own fields where a
+section of the specification defines a layout for it, and carries neither
 `metadata_length` nor `payload_length`, because an encoder computes both
 from what it was given. On `decode`, and in `expect.fields` everywhere,
 the two length fields are present, because a decoder reads them. A fixture
@@ -265,6 +267,22 @@ real fixture carries.
   }
 }
 ```
+
+## Boundaries no frame of this revision reaches
+
+The corpus states the minimum and the maximum legal value of every header
+field that a frame of this revision can carry. Three boundaries are
+outside it, and each one is outside it because the contract forbids the
+frame that would carry it, not because the corpus form cannot state it.
+
+| Boundary | Why no fixture of this corpus states it | What removes it |
+|---|---|---|
+| `kind` at REQUEST | protocol version 0 assigns no opcode, so a peer of this revision sends no REQUEST frame | the revision that assigns an opcode |
+| `code` at `0xFFFF` | the value is unassigned in all three of the spaces the field draws from | the revision that assigns the value at the top of one of those spaces |
+| `metadata length` above zero | protocol version 0 assigns no metadata identifier, so no frame a peer may send carries an entry | the revision that assigns a metadata identifier |
+
+Each of the three is covered on the decode side, where a fixture states
+what a receiver does when a peer sends it regardless.
 
 ## Revision binding
 

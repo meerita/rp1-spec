@@ -1,6 +1,6 @@
 {
   "id": "correlation/second-terminal-frame-for-a-retired-id",
-  "revision": "v0.1.2",
+  "revision": "v0.2.0",
   "protocol_version": 0,
   "clause": "A request id not in flight",
   "direction": "decode",

@@ -19,7 +19,7 @@ always produces a new revision.
 Each entry states what changed, whether a peer built against the previous
 revision still conforms, and what such a peer must do when it does not.
 
-## [0.1.2]
+## [0.2.0]
 
 Classification: defect correction. No clause of protocol version 0
 changes, no wire value changes, and no fixture changes what it asserts
@@ -72,7 +72,7 @@ send an entry whose identifier this revision does not assign.
   frame of this revision carries.
 - The corpus form states that an encoder handed a payload whose layout a
   section defines is given that payload's fields rather than its bytes.
-- Every normative document and every fixture states revision v0.1.2. The
+- Every normative document and every fixture states revision v0.2.0. The
   corpus of revision v0.1.1 is preserved at the tag that published it.
 - The corpus is 71 fixtures.
 

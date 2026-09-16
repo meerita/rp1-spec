@@ -1,25 +1,12 @@
 {
   "id": "metadata/single-entry",
-  "revision": "v0.1.1",
+  "revision": "v0.1.2",
   "protocol_version": 0,
   "clause": "The Entry Layout",
-  "direction": "both",
+  "direction": "decode",
   "provenance": "derived-from-specification",
   "input": {
-    "fields": {
-      "version": 0,
-      "kind": 2,
-      "flags": 0,
-      "code": 0,
-      "request_id": 1,
-      "metadata": [
-        {
-          "identifier": 1,
-          "value": "0a0b"
-        }
-      ],
-      "payload": ""
-    },
+    "bytes": "0002000000000600000000000100000000000000010002000a0b",
     "role": "client"
   },
   "expect": {
@@ -31,7 +18,7 @@
       "code": 0,
       "metadata_length": 6,
       "payload_length": 0,
-      "request_id": 1,
+      "request_id": "1",
       "metadata": [
         {
           "identifier": 1,
@@ -39,7 +26,6 @@
         }
       ]
     },
-    "bytes": "0002000000000600000000000100000000000000010002000a0b",
     "bytes_consumed": 26
   }
 }

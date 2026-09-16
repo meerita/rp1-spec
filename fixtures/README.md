@@ -1,8 +1,8 @@
 ---
 title: Fixture Corpus (Non-Normative)
-description: The form of the fixture corpus published with revision v0.1.1 of protocol version 0.
+description: The form of the fixture corpus published with revision v0.1.2 of protocol version 0.
 protocol_version: 0
-revision: v0.1.1
+revision: v0.1.2
 normative: false
 ---
 
@@ -53,6 +53,39 @@ A byte string of length zero is the empty string.
 ""                      no bytes
 ```
 
+## Integer form
+
+Every integer this corpus carries is a JSON number, with one exception: a
+field whose wire type is `u64` is a JSON string of decimal digits.
+
+```text
+"request_id": "1"
+"request_id": "18446744073709551615"
+```
+
+The string holds the field's value in decimal, with no sign, no
+separators, and no leading zero except for the value zero itself. The
+form follows the type of the field and never the magnitude of the value,
+so a loader maps the field to its 64-bit integer type once, from the
+field's name, and never branches on what one fixture happens to carry.
+
+A JSON number cannot carry such a field. The format lets a reader set its
+own limits on the range and the precision it accepts, and a reader that
+represents a number as an IEEE 754 binary64 double agrees exactly on the
+integers from -(2^53)+1 to (2^53)-1 and on no others. The maximum request
+id, 18446744073709551615, is far above that range: such a reader loads it
+as 18446744073709551616, which is not a value the field can carry, and
+the load reports no error.
+
+Protocol version 0 types two fields as `u64`: the `request id` of the
+frame header, and the `logical length` of the value held outside memory
+result code. The two members whose values are request ids, `in_flight`
+and `retires`, take the same form.
+
+Every other integer this corpus carries is a number. None of them can
+exceed the maximum frame size, which bounds every length, every offset
+and every count the corpus states.
+
 ## Fields
 
 Every fixture is a JSON object carrying all eight fields:
@@ -60,7 +93,7 @@ Every fixture is a JSON object carrying all eight fields:
 | Field | Type | Meaning |
 |---|---|---|
 | `id` | string | the stable identifier, matching the file path |
-| `revision` | string | the specification revision the fixture represents, `v0.1.1` in this corpus |
+| `revision` | string | the specification revision the fixture represents, `v0.1.2` in this corpus |
 | `protocol_version` | number | the protocol version the fixture represents, `0` in this corpus |
 | `clause` | string | the title of the section that binds the rule the fixture exercises |
 | `direction` | string | `decode`, `encode`, or `both` |
@@ -89,7 +122,7 @@ cannot be stated is removed rather than kept.
 | Member | Presence | Meaning |
 |---|---|---|
 | `role` | when the outcome depends on which peer reads the bytes | `client` or `server`, the peer the bytes are offered to |
-| `in_flight` | when the outcome depends on which requests are in flight at the receiver | the request ids in flight at the receiver, as an array of numbers, in the order those requests entered flight |
+| `in_flight` | when the outcome depends on which requests are in flight at the receiver | the request ids in flight at the receiver, as an array, in the order those requests entered flight |
 
 A field name is the name the specification gives the field, with each
 space written as an underscore, so `metadata length` is `metadata_length`.
@@ -107,6 +140,26 @@ correlates a frame by the order requests were sent rather than by the
 request id the frame carries. The order carries no other meaning, and an
 empty array states that no request is in flight at the receiver.
 
+## What an encode fixture offers
+
+The input of a fixture whose direction is `encode` or `both` is a frame a
+peer may send at the revision the fixture represents. Every field value
+that input names is one the contract permits its sender to put on the
+wire. A frame the contract forbids a peer to send is stated by a decode
+fixture instead, which carries what a receiver does when a peer sends it
+regardless.
+
+The encode direction exists so that two implementations write the same
+bytes for a frame both are permitted to write. Bytes pinned for a frame
+no conforming peer may send would state an agreement no implementation
+can ever exercise, and the same corpus refuses those bytes on the decode
+side.
+
+The rule narrows with the revision that carries it. A value a revision
+leaves unassigned is a value no peer of that revision may send, so the
+frames its encode fixtures state are the frames its own assignments
+permit.
+
 ## Entries of a region
 
 A field whose value is a region of entries is carried as a JSON array, one
@@ -121,7 +174,9 @@ object per entry, in wire order. The metadata region is the field
 An entry's `value length` is not carried. It is the length of `value`.
 
 An encoder is given what it cannot derive. On `encode` and `both`,
-`input.fields` carries `metadata` and `payload` and carries neither
+`input.fields` carries `metadata`, carries the payload as `payload` where
+the contract leaves it opaque and as the payload's own fields where a
+section of the specification defines a layout for it, and carries neither
 `metadata_length` nor `payload_length`, because an encoder computes both
 from what it was given. On `decode`, and in `expect.fields` everywhere,
 the two length fields are present, because a decoder reads them. A fixture
@@ -150,7 +205,7 @@ members of `expect` are present.
 | `fields` | always | every field value a conforming decoder extracts |
 | `bytes_consumed` | on `decode` and `both` | the number of input bytes the frame occupies |
 | `bytes` | on `encode` and `both` | the exact byte string a conforming encoder produces |
-| `retires` | when `input` states `in_flight` | the request id the frame retires at the receiver, or `0` when it retires none |
+| `retires` | when `input` states `in_flight` | the request id the frame retires at the receiver, or `"0"` when it retires none |
 
 A fixture whose direction is `both` asserts both halves: encoding
 `input.fields` produces `expect.bytes`, and decoding `expect.bytes`
@@ -178,28 +233,31 @@ follows.
 | Member | Presence | Meaning |
 |---|---|---|
 | `bytes_required` | always | the total number of bytes the receiver requires before it holds a frame |
-| `retires` | when `input` states `in_flight` | the request id the frame retires at the receiver, always `0` here |
+| `retires` | when `input` states `in_flight` | the request id the frame retires at the receiver, always `"0"` here |
 
 An incomplete frame is a decoder state and not a failure, so an
 `incomplete` fixture carries no class and no scope. The receiver reads
 more bytes.
 
-`retires` is `0` on every `incomplete` fixture, because bytes that are not
-a frame name no request. The member is carried rather than left implicit
+`retires` is `"0"` on every `incomplete` fixture, because bytes that are
+not a frame name no request. The member is carried rather than left implicit
 so that a receiver which retires a request on a partial frame fails the
 fixture instead of passing it.
 
 ## Shape
+
+A decode fixture offers bytes and states what a receiver produces from
+them.
 
 ```text
 Example, illustrative. A value in angle brackets stands for content a
 real fixture carries.
 
 {
-  "id": "header/minimum-legal-frame",
-  "revision": "v0.1.1",
+  "id": "<the identifier, matching the file path>",
+  "revision": "v0.1.2",
   "protocol_version": 0,
-  "clause": "Frame Header",
+  "clause": "<the title of the section that binds the rule>",
   "direction": "decode",
   "provenance": "derived-from-specification",
   "input": {
@@ -212,6 +270,67 @@ real fixture carries.
   }
 }
 ```
+
+A fixture whose direction is `both` hands an encoder the fields and
+states the bytes it writes, and those same bytes are what its decode half
+offers. This is `header/minimum-legal-frame`, in full:
+
+```json
+{
+  "id": "header/minimum-legal-frame",
+  "revision": "v0.1.2",
+  "protocol_version": 0,
+  "clause": "Frame Header",
+  "direction": "both",
+  "provenance": "derived-from-specification",
+  "input": {
+    "fields": {
+      "version": 0,
+      "kind": 2,
+      "flags": 0,
+      "code": 0,
+      "request_id": "1",
+      "metadata": [],
+      "payload": ""
+    },
+    "role": "client"
+  },
+  "expect": {
+    "outcome": "success",
+    "fields": {
+      "version": 0,
+      "kind": 2,
+      "flags": 0,
+      "code": 0,
+      "metadata_length": 0,
+      "payload_length": 0,
+      "request_id": "1"
+    },
+    "bytes": "0002000000000000000000000100000000000000",
+    "bytes_consumed": 20
+  }
+}
+```
+
+The encoder is handed no `metadata_length` and no `payload_length`, and
+the decoder reads both. The request id is a string on each side, because
+the field is a `u64`.
+
+## Boundaries no frame of this revision reaches
+
+The corpus states the minimum and the maximum legal value of every header
+field that a frame of this revision can carry. Three boundaries are
+outside it, and each one is outside it because the contract forbids the
+frame that would carry it, not because the corpus form cannot state it.
+
+| Boundary | Why no fixture of this corpus states it | What removes it |
+|---|---|---|
+| `kind` at REQUEST | protocol version 0 assigns no opcode, so a peer of this revision sends no REQUEST frame | the revision that assigns an opcode |
+| `code` at `0xFFFF` | the value is unassigned in all three of the spaces the field draws from | the revision that assigns the value at the top of one of those spaces |
+| `metadata length` above zero | protocol version 0 assigns no metadata identifier, so no frame a peer may send carries an entry | the revision that assigns a metadata identifier |
+
+Each of the three is covered on the decode side, where a fixture states
+what a receiver does when a peer sends it regardless.
 
 ## Revision binding
 

@@ -1,6 +1,6 @@
 {
   "id": "results/absent",
-  "revision": "v0.1.1",
+  "revision": "v0.1.2",
   "protocol_version": 0,
   "clause": "Absent",
   "direction": "decode",
@@ -18,7 +18,7 @@
       "code": 1,
       "metadata_length": 0,
       "payload_length": 0,
-      "request_id": 1
+      "request_id": "1"
     },
     "bytes_consumed": 20
   }

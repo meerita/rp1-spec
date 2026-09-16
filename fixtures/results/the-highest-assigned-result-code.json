@@ -1,12 +1,20 @@
 {
-  "id": "results/value-held-outside-memory",
+  "id": "results/the-highest-assigned-result-code",
   "revision": "v0.1.2",
   "protocol_version": 0,
   "clause": "Value held outside memory",
-  "direction": "decode",
+  "direction": "both",
   "provenance": "derived-from-specification",
   "input": {
-    "bytes": "00020000040000000800000001000000000000000010000000000000",
+    "fields": {
+      "version": 0,
+      "kind": 2,
+      "flags": 0,
+      "code": 4,
+      "request_id": "1",
+      "metadata": [],
+      "logical_length": "18446744073709551615"
+    },
     "role": "client"
   },
   "expect": {
@@ -19,8 +27,9 @@
       "metadata_length": 0,
       "payload_length": 8,
       "request_id": "1",
-      "logical_length": "4096"
+      "logical_length": "18446744073709551615"
     },
+    "bytes": "0002000004000000080000000100000000000000ffffffffffffffff",
     "bytes_consumed": 28
   }
 }

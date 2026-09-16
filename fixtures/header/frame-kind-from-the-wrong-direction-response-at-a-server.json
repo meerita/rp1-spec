@@ -1,6 +1,6 @@
 {
   "id": "header/frame-kind-from-the-wrong-direction-response-at-a-server",
-  "revision": "v0.1.1",
+  "revision": "v0.1.2",
   "protocol_version": 0,
   "clause": "Frame Kinds",
   "direction": "decode",

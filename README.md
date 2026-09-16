@@ -11,7 +11,7 @@ It is not documentation of the RP-1 server, and it is not an SDK guide.
 
 ## Status
 
-Revision v0.1.1 defines protocol version 0 at the framing and codec
+Revision v0.1.2 defines protocol version 0 at the framing and codec
 surface. Every document of that revision carries the status `draft`.
 
 From that revision an implementer writes an encoder and a decoder for
@@ -22,7 +22,7 @@ is a codec: it is not a client, and it does not interoperate with a
 deployed peer.
 
 A draft contract changes without the treatment a classified change
-carries. An implementation built against revision v0.1.1 is built at the
+carries. An implementation built against revision v0.1.2 is built at the
 implementer's own risk, and pins the revision it was built against.
 
 ## Scope

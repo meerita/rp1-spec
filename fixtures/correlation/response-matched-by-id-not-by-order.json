@@ -1,6 +1,6 @@
 {
   "id": "correlation/response-matched-by-id-not-by-order",
-  "revision": "v0.1.1",
+  "revision": "v0.1.2",
   "protocol_version": 0,
   "clause": "Correlation Is by Request Id Alone",
   "direction": "decode",
@@ -9,8 +9,8 @@
     "bytes": "0002000000000000000000000b00000000000000",
     "role": "client",
     "in_flight": [
-      6,
-      11
+      "6",
+      "11"
     ]
   },
   "expect": {
@@ -22,9 +22,9 @@
       "code": 0,
       "metadata_length": 0,
       "payload_length": 0,
-      "request_id": 11
+      "request_id": "11"
     },
     "bytes_consumed": 20,
-    "retires": 11
+    "retires": "11"
   }
 }

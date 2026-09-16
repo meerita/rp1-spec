@@ -1,6 +1,6 @@
 {
   "id": "metadata/region-on-a-response",
-  "revision": "v0.1.1",
+  "revision": "v0.1.2",
   "protocol_version": 0,
   "clause": "The Metadata Region",
   "direction": "decode",
@@ -18,7 +18,7 @@
       "code": 0,
       "metadata_length": 5,
       "payload_length": 0,
-      "request_id": 4,
+      "request_id": "4",
       "metadata": [
         {
           "identifier": 16,

@@ -1,6 +1,6 @@
 {
   "id": "metadata/region-on-an-error",
-  "revision": "v0.1.1",
+  "revision": "v0.1.2",
   "protocol_version": 0,
   "clause": "The Metadata Region",
   "direction": "decode",
@@ -18,7 +18,7 @@
       "code": 4,
       "metadata_length": 4,
       "payload_length": 2,
-      "request_id": 4,
+      "request_id": "4",
       "metadata": [
         {
           "identifier": 17,

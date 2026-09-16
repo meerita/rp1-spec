@@ -1,6 +1,6 @@
 {
   "id": "errors/text-that-is-not-valid-utf8",
-  "revision": "v0.1.1",
+  "revision": "v0.1.2",
   "protocol_version": 0,
   "clause": "The ERROR Frame Payload",
   "direction": "decode",
@@ -18,7 +18,7 @@
       "code": 3,
       "metadata_length": 0,
       "payload_length": 5,
-      "request_id": 1,
+      "request_id": "1",
       "detail_length": 0,
       "detail_bytes": "",
       "text": "fffefd"

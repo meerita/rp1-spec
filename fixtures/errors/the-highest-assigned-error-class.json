@@ -1,12 +1,22 @@
 {
-  "id": "errors/detail-length-zero-without-text",
+  "id": "errors/the-highest-assigned-error-class",
   "revision": "v0.1.2",
   "protocol_version": 0,
-  "clause": "The ERROR Frame Payload",
-  "direction": "decode",
+  "clause": "Wrong type",
+  "direction": "both",
   "provenance": "derived-from-specification",
   "input": {
-    "bytes": "00030000030000000200000001000000000000000000",
+    "fields": {
+      "version": 0,
+      "kind": 3,
+      "flags": 0,
+      "code": 14,
+      "request_id": "1",
+      "metadata": [],
+      "detail_length": 0,
+      "detail_bytes": "",
+      "text": ""
+    },
     "role": "client"
   },
   "expect": {
@@ -15,7 +25,7 @@
       "version": 0,
       "kind": 3,
       "flags": 0,
-      "code": 3,
+      "code": 14,
       "metadata_length": 0,
       "payload_length": 2,
       "request_id": "1",
@@ -23,6 +33,7 @@
       "detail_bytes": "",
       "text": ""
     },
+    "bytes": "000300000e0000000200000001000000000000000000",
     "bytes_consumed": 22
   }
 }

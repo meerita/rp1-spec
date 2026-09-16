@@ -1,6 +1,6 @@
 {
   "id": "metadata/unassigned-optional-identifier-skipped",
-  "revision": "v0.1.1",
+  "revision": "v0.1.2",
   "protocol_version": 0,
   "clause": "The Optional Range",
   "direction": "decode",
@@ -18,7 +18,7 @@
       "code": 0,
       "metadata_length": 7,
       "payload_length": 0,
-      "request_id": 1,
+      "request_id": "1",
       "metadata": [
         {
           "identifier": 1,

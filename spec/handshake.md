@@ -69,11 +69,13 @@ protocol version 0, not negotiated values, so a decoder is bounded before
 any exchange completes.
 
 A connection in the pre-negotiation state admits exactly one request from
-the offerer and exactly one response from the responder. A responder that
-will not admit the connection closes the transport without sending a
-frame. A peer that detects a connection-fatal failure in this state
-reports it the way Framing states: a server sends an ERROR frame and then
-closes, and a client closes without sending a frame.
+the offerer and exactly one terminal frame from the responder: a RESPONSE
+frame carrying the success result code when the handshake succeeds, and an
+ERROR frame when it fails. A responder that will not admit the connection
+closes the transport without sending a frame. A peer that detects a
+connection-fatal failure in this state reports it the way Framing states:
+a server sends an ERROR frame and then closes, and a client closes without
+sending a frame.
 
 ## The Handshake Exchange
 

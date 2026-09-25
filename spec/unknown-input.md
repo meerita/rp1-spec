@@ -133,8 +133,7 @@ handshake frame. Each names the class and the scope its section states.
 | a negotiated version above 255 | malformed request | connection-fatal | Version Negotiation | `handshake/negotiated-version-above-header-width` |
 | a negotiated maximum frame size below 65536 | malformed request | connection-fatal | Negotiated maximum frame size | `handshake/negotiated-size-below-the-floor` |
 | a negotiated maximum metadata size below 4096 | malformed request | connection-fatal | Negotiated maximum metadata size | `handshake/negotiated-metadata-below-the-floor` |
-| a capability entry carrying an unassigned identifier | none, the receiver ignores it | none | An Unassigned Identifier | `handshake/unassigned-capability-id-ignored` |
-| a capability entry whose value length is wrong for its identifier | none, the receiver ignores it | none | An Unassigned Identifier | `handshake/capability-value-wrong-length-not-accepted` |
+| a capability entry carrying an unassigned identifier | none, the receiver ignores it | none | An Unassigned Identifier | `handshake/unassigned-capability-id-ignored`, `handshake/capability-entry-with-a-value-ignored` |
 | an accepted capability the offerer did not offer | protocol violation | connection-fatal | Offering and Acceptance | `handshake/acceptance-names-unoffered-capability` |
 
 The row for an unassigned identifier and the row for a wrong-length value

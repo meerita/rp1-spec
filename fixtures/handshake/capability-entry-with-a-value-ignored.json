@@ -1,5 +1,5 @@
 {
-  "id": "handshake/capability-value-wrong-length-not-accepted",
+  "id": "handshake/capability-entry-with-a-value-ignored",
   "revision": "v0.3.0",
   "protocol_version": 0,
   "clause": "An Unassigned Identifier",

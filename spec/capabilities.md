@@ -50,10 +50,14 @@ payload, in Handshake, states the failure each violation produces.
 A receiver that meets a capability identifier this revision does not assign
 MUST ignore the entry. It MUST NOT accept the identifier, MUST NOT produce
 an error, and MUST advance four bytes plus the value length stated by the
-entry.
+entry. The value length is not a reason to refuse the entry: an entry
+carrying an unassigned identifier is ignored whatever value or value length
+it states.
 
-An entry whose value length is wrong for its identifier MUST be treated the
-same way: not accepted, and no error.
+From the revision that assigns an identifier, an entry whose value length
+is wrong for that identifier MUST be treated the same way: not accepted,
+and no error. This revision assigns no identifier, so that case cannot
+arise here and no fixture of this revision reaches it.
 
 Ignoring is safe in both directions because an unassigned identifier never
 enters the accepted set. A responder that did not accept an identifier

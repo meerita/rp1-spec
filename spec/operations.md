@@ -76,7 +76,55 @@ in each direction and the validation it runs on its arguments.
 ## The REQUEST frame payload
 
 Handshake defines the handshake request payload. Each of the five ungated
-operations defines its request payload below.
+operations defines its request payload below, and all five share one
+argument encoding.
+
+### The key and the value
+
+A key is an opaque byte string. A value is an opaque byte string. Neither
+is required to be UTF-8, and neither is interpreted by the protocol. A key
+and a value may each be empty: a key of zero bytes and a value of zero
+bytes are each one value of the field. An empty key is a key, and a value
+of zero bytes is a value; neither is the same as an absent key, which is a
+result code and not a payload.
+
+`PING` carries no key and no value, and its request payload is empty. `GET`,
+`DEL` and `EXISTS` carry one key, and their request payload is the key bytes
+alone: the key runs from the first byte of the payload to its last, so its
+length is `payload length` and no length field is carried. A receiver MUST
+read the whole payload as the key and MUST NOT require a length field for
+it.
+
+`SET` carries a key and a value:
+
+```text
+offset  size  field        type
+     0     4  key length   u32
+     4     n  key          bytes
+   n+4     -  value        bytes
+```
+
+The value length is derived from the frame's `payload length`:
+
+```text
+value length = payload length - 4 - key length
+```
+
+`key length` is a `u32`, so a key of any length the frame can carry is
+expressible in it. The value length is the rest of the payload after the
+key, so a `SET` whose key length leaves no byte carries a value of zero
+bytes, and a `SET` whose key length is zero carries an empty key.
+
+A receiver MUST check that `4 + key length` does not exceed `payload
+length` before it takes either slice. A receiver that meets a `SET` payload
+shorter than its four-byte head, or a `SET` payload whose `key length`
+exceeds the bytes that follow it, MUST treat the frame as a malformed
+request and close the connection. The check runs after the frame is
+admitted, in the order Checks that follow the order states.
+
+An encoder MUST write the key length as the length of the key it writes and
+MUST write the value immediately after the key. Every `SET` payload has one
+encoding.
 
 A receiver refuses a REQUEST frame carrying an unassigned opcode at step 13
 whatever its payload carries, and interprets no byte of that payload to

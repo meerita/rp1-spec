@@ -82,6 +82,7 @@ Whether a frame names a request follows from its kind:
 | REQUEST | always: the request it opens |
 | RESPONSE | always: the request it answers |
 | ERROR | The request id an ERROR frame carries states when |
+| WITHDRAWAL | always: the request it withdraws |
 
 A peer MUST NOT send a frame that names a request and carries request id
 0. A receiver that meets one MUST treat the frame as a protocol violation

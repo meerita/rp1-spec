@@ -16,12 +16,13 @@ entry layout the handshake payload carries, the rules by which a capability
 is offered and accepted, and the dependencies a capability may declare.
 
 This revision assigns identifier `0x0002`, the cancellation capability,
-which gates the withdrawal frame kind, identifier `0x0004`, the deadlines
-capability, which gates the optional metadata identifier `0x0001`, and
+which gates the withdrawal frame kind and the cancelled error class,
+identifier `0x0004`, the deadlines capability, which gates the optional
+metadata identifier `0x0001` and the deadline exceeded error class, and
 identifier `0x0005`, the request classes capability, which gates the
 optional metadata identifier `0x0002`. It does not define the handshake
 exchange or its payloads, which Handshake owns, and it defines no
-operation, result code or error class a capability would gate.
+operation or result code a capability would gate.
 
 An engineer implementing this document alone can offer and accept the
 capability set this revision assigns, ignore an identifier it does not
@@ -123,8 +124,9 @@ none.
 ## Cancellation
 
 Identifier `0x0002` is the cancellation capability. It gates frame kind
-`0x07`, the withdrawal frame: a connection that did not accept it has no
-withdrawal.
+`0x07`, the withdrawal frame, and error class `0x0007`, cancelled: a
+connection that did not accept it has no withdrawal and never receives the
+cancelled class.
 
 The client offers it in the handshake request and the server accepts it in
 the handshake response. It carries no value in either direction: an entry
@@ -144,8 +146,9 @@ accepted.
 ## Deadlines
 
 Identifier `0x0004` is the deadlines capability. It gates metadata
-identifier `0x0001`, the deadline entry: a connection that did not accept
-it has no deadlines.
+identifier `0x0001`, the deadline entry, and error class `0x0006`, deadline
+exceeded: a connection that did not accept it has no deadlines and never
+receives the deadline exceeded class.
 
 The client offers it in the handshake request and the server accepts it in
 the handshake response. It carries no value in either direction: an entry
@@ -187,8 +190,8 @@ accepted.
 
 | Id | Capability | What it gates |
 |---|---|---|
-| `0x0002` | cancellation | frame kind `0x07` |
-| `0x0004` | deadlines | metadata identifier `0x0001` |
+| `0x0002` | cancellation | frame kind `0x07`, error class `0x0007` |
+| `0x0004` | deadlines | metadata identifier `0x0001`, error class `0x0006` |
 | `0x0005` | request classes | metadata identifier `0x0002` |
 | `0x0000..0x0001`, `0x0003`, `0x0006..0xFFFF` | unassigned | nothing |
 

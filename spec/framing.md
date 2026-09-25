@@ -235,6 +235,11 @@ the same bytes with different classes.
 This section states the order. The section that owns each check states the
 requirement, names the peer it binds, and states its consequence.
 
+Step 8 carries a second row for the withdrawal frame. The frame's payload
+and metadata region are empty, and Request Lifetime states the rule. The
+check runs before steps 14 and 15, whose failures are request-scoped,
+because a withdrawal produces no frame to carry a request-scoped answer.
+
 ```text
  step  condition                                    class                  scope
     1  fewer than 20 bytes held                     none, requires 20 bytes
@@ -248,6 +253,8 @@ requirement, names the peer it binds, and states its consequence.
        size
     7  fewer bytes held than the total length       none, requires the total length
     8  the metadata region does not fill exactly    malformed request      connection-fatal
+    8  a withdrawal frame is non-empty in its       malformed request      connection-fatal
+       payload or in its metadata region
     9  kind travels from the wrong direction        protocol violation     connection-fatal
    10  request id 0 on a kind that names a request  protocol violation     connection-fatal
    11  a frame opening a request already in flight  protocol violation     connection-fatal

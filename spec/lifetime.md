@@ -87,12 +87,15 @@ cancellation capability gates it. Framing states its kind, its direction,
 and the rule for its `code` field; this section states what it does.
 
 A withdrawal names the request to withdraw in its `request id` field. Its
-payload is empty and its metadata region is empty. A receiver that meets a
-withdrawal frame carrying a non-empty payload or a non-empty metadata
-region MUST treat the frame as a malformed request and close the
-connection. The frame produces no frame of its own, so a request-scoped
-failure would have no request to answer and no frame to carry the answer,
-and the connection-fatal scope is the one that needs no request to answer.
+payload is empty and its metadata region is empty. A receiver MUST check
+both for emptiness before it applies Entry Order and the Required Range to
+the region. A withdrawal frame carrying a non-empty payload or a non-empty
+metadata region is a malformed request, and a receiver that meets one MUST
+close the connection. Frame Admission Order places this check at step 8,
+before the two request-scoped metadata checks. The frame produces no frame
+of its own, so a request-scoped failure would have no request to answer and
+no frame to carry the answer, and the connection-fatal scope is the one
+that needs no request to answer.
 
 A withdrawal produces no frame of its own. The request it names produces
 exactly one terminal frame, by the rule Terminal Frames states.

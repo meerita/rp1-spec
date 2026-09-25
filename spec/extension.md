@@ -151,8 +151,8 @@ including the peer it binds and the consequence of violating it.
 | `code` on a WITHDRAWAL frame | The Control Code on a Kind That Assigns None | protocol violation, connection-fatal | a capability |
 | `identifier` `0x0001`, the deadline | The Assigned Identifiers | an entry of another value length is skipped | an assignment alone |
 | `identifier` `0x0002`, the request class | The Request Class Entry | an unassigned value is skipped | an assignment alone |
-| `code` `0x0006`, deadline exceeded | Deadline exceeded | a connection without deadlines refuses the class | a capability |
-| `code` `0x0007`, cancelled | Cancelled | a connection without cancellation refuses the class | a capability |
+| `code` `0x0006`, deadline exceeded | Deadline exceeded | protocol violation, connection-fatal, on a connection without deadlines | a capability |
+| `code` `0x0007`, cancelled | Cancelled | protocol violation, connection-fatal, on a connection without cancellation | a capability |
 | `identifier` in `0x0000..0x7FFF` | The Optional Range | skipped, and no failure | an assignment alone |
 | `identifier` in `0x8000..0xFFFF` | The Required Range | invalid argument, request-scoped | an assignment alone |
 | `request id` 0 | The Reserved Request Id | protocol violation, connection-fatal, on a frame that names a request | with the frame kind that gives it a meaning |

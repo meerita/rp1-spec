@@ -64,6 +64,7 @@ implementation produces that row's outcome.
 | 6 | `metadata length` exceeds the maximum metadata size in force | malformed request | connection-fatal | Pre-Negotiation Bounds, Negotiated maximum metadata size | `limits/metadata-region-one-byte-past-the-maximum`, `limits/metadata-region-above-negotiated` |
 | 7 | fewer bytes held than the total length | none, the receiver requires the total length | none | The two steps that are not failures | `framing/incomplete-body-one-byte-short`, `limits/frame-at-the-maximum`, `limits/metadata-region-at-the-maximum` |
 | 8 | the entries of the metadata region do not fill it exactly | malformed request | connection-fatal | Region Fill | `metadata/region-ends-mid-entry`, `metadata/entry-claims-more-than-the-region-holds` |
+| 8 | a withdrawal frame is non-empty in its payload or in its metadata region | malformed request | connection-fatal | Withdrawal | `header/withdrawal-frame-with-a-payload-refused`, `header/withdrawal-frame-with-a-metadata-region-refused` |
 | 9 | `kind` travels from the wrong direction | protocol violation | connection-fatal | Direction | `header/frame-kind-from-the-wrong-direction-request-at-a-client`, `header/frame-kind-from-the-wrong-direction-response-at-a-server` |
 | 10 | `request id` is 0 on a frame that names a request | protocol violation | connection-fatal | The Reserved Request Id | `correlation/request-frame-with-the-reserved-id`, `correlation/response-frame-with-the-reserved-id`, `correlation/error-frame-with-the-reserved-id-and-a-request-scoped-class` |
 | 11 | a frame opens a request whose `request id` is already in flight at the receiver | protocol violation | connection-fatal | A request id already in flight | `correlation/duplicate-in-flight-id` |
@@ -113,9 +114,6 @@ Checks that follow the order places them after step 15.
 | a REQUEST frame carrying the `SET` opcode whose `key length` exceeds the bytes that follow it | malformed request | connection-fatal | The key and the value | `operations/declared-key-length-overruns-the-payload` |
 | a RESPONSE frame carrying the absent result code whose `payload length` is not zero | malformed request | connection-fatal | Absent | `results/absent-with-a-payload-refused` |
 | a RESPONSE frame carrying the value held outside memory result code whose `payload length` is not eight | malformed request | connection-fatal | Value held outside memory | `results/value-held-outside-memory-with-a-short-payload-refused` |
-| a WITHDRAWAL frame whose payload is not empty | malformed request | connection-fatal | Withdrawal | `header/withdrawal-frame-with-a-payload-refused` |
-| a WITHDRAWAL frame whose metadata region is not empty | malformed request | connection-fatal | Withdrawal | `header/withdrawal-frame-with-a-metadata-region-refused` |
-
 A frame refused by one of these rows was admitted by the order, and a
 frame refused by the order reaches none of them. The order decides first
 in every case.
@@ -127,7 +125,7 @@ opcodes carries the request payload Operations defines for it, and that
 document states the checks over it. A REQUEST frame carrying any other
 opcode is refused at step 13 whatever its payload carries. A WITHDRAWAL
 frame carries no payload and no metadata region, and Withdrawal states the
-check over it.
+check over it, which Step 8 of the order carries.
 
 ## Inputs the Connection State and the Handshake Decide
 

@@ -124,7 +124,8 @@ An error class is a `u16`. The whole domain is covered here:
 | `0x0003` | unsupported operation | request-scoped |
 | `0x0004` | invalid argument | request-scoped |
 | `0x0005` | resource limit | connection-fatal |
-| `0x0006..0x0007` | reserved | none |
+| `0x0006` | deadline exceeded | request-scoped |
+| `0x0007` | reserved | none |
 | `0x0008` | overloaded | request-scoped |
 | `0x0009..0x000A` | reserved | none |
 | `0x000B` | internal error | request-scoped |
@@ -220,6 +221,28 @@ connection.
 This is the whole meaning of the class.
 
 A mutation: nothing was written.
+
+The detail region: this revision defines none for this class, and the
+`detail length` of an ERROR frame carrying it is zero.
+
+### Deadline exceeded
+
+```text
+value   0x0006
+scope   request-scoped
+```
+
+The request carried a deadline whose duration had passed before the
+responder began the work the request names. The responder performed no
+work for the request.
+
+The deadlines capability gates this class. A receiver that meets an ERROR
+frame carrying this class on a connection whose accepted set does not name
+deadlines MUST treat the frame as an unassigned class: it MUST treat the
+frame as a protocol violation and close the connection.
+
+A mutation: nothing was written. A request this class answers was stopped
+before it committed, and the class never reports a write that ran.
 
 The detail region: this revision defines none for this class, and the
 `detail length` of an ERROR frame carrying it is zero.

@@ -16,11 +16,10 @@ long it is, the layout of an entry, the order entries appear in, the whole
 domain of the identifier field, and what a receiver does with an entry
 whose identifier this revision does not assign.
 
-It assigns no identifier. Protocol version 0 assigns none at revision
-v0.5.1, and both ranges of the domain are unassigned. What this revision
-publishes is the region and the rule each range carries, so that a later
-revision assigns an identifier without invalidating a peer built on this
-one.
+This revision assigns identifier `0x0001`, the deadline, in the optional
+range. Both ranges carry the rule each one states for an identifier this
+revision does not assign, so a later revision assigns a further identifier
+without invalidating a peer built on this one.
 
 It does not define the bound on the region's length. Limits states that
 bound, the bytes it counts, and what a receiver does with a frame that
@@ -78,8 +77,8 @@ not the same as an absent entry: the entry is present, its identifier is
 present, and a receiver acts on it by its identifier.
 
 The value bytes are opaque. A receiver that does not recognise an entry's
-identifier interprets none of them, and this revision assigns no
-identifier, so it defines no meaning for the bytes of any entry.
+identifier interprets none of them. The Assigned Identifiers states the
+meaning this revision gives to the value bytes of each entry it assigns.
 
 ## Region Fill
 
@@ -146,20 +145,45 @@ A receiver computes the class from the identifier alone: the entry is
 required when `identifier & 0x8000` is non-zero and optional otherwise. It
 reads no other field of the entry and holds no state to decide.
 
-This revision assigns no identifier in either range. A peer MUST NOT send
-an entry whose identifier this revision does not assign, so a peer
-implementing this revision alone sends a `metadata length` of zero on
-every frame and carries no entry at all.
+This revision assigns identifier `0x0001`, the deadline, in the optional
+range. The Assigned Identifiers states its encoding and the meaning of its
+value.
 
-The two rules below are therefore the whole of what a receiver does with a
-region's contents at this revision. They are stated because a peer
-implementing a later revision has entries to send, and a receiver built on
-this revision meets them.
+A peer MUST NOT send an entry whose identifier this revision does not
+assign. A receiver that meets one applies the rule of the range the
+identifier lies in: The Optional Range for an optional identifier, and The
+Required Range for a required one.
+
+The two rules below are the whole of what a receiver does with a region
+whose entries this revision does not assign. A peer implementing a later
+revision has entries to send, and a receiver built on this revision meets
+them.
 
 `0x0000` is an unassigned optional identifier and carries the optional
 range's rule. No identifier is reserved as never valid: both rules leave
 the connection usable, so no value in this domain needs a rule that ends
 it.
+
+### The Assigned Identifiers
+
+| Identifier | Range | Entry | Value | Gated by |
+|---|---|---|---|---|
+| `0x0001` | optional | the deadline | four bytes, a little-endian `u32` count of microseconds | the deadlines capability |
+
+An entry carrying identifier `0x0001` is a deadline. The entry is optional:
+a receiver that does not read it serves the frame without it. Request
+Lifetime states what the value means, the instant the duration runs from,
+and what a responder does with it.
+
+The entry's value is exactly four bytes. A receiver that meets an entry
+carrying identifier `0x0001` whose value length is not four bytes MUST
+treat the entry as one this revision does not read: it skips the entry by
+the rule of The Optional Range, produces no failure, and serves the
+request without a deadline.
+
+Metadata owns the identifier and the encoding. Request Lifetime owns the
+meaning of the value and the behavior a deadline produces, and
+Capabilities owns the capability that gates the entry.
 
 ### The Optional Range
 

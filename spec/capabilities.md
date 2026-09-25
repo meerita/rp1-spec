@@ -15,15 +15,14 @@ This document defines the capability identifier domain, the capability
 entry layout the handshake payload carries, the rules by which a capability
 is offered and accepted, and the dependencies a capability may declare.
 
-It assigns no capability identifier, so nothing is gated at this revision
-and every offer is refused by acceptance of nothing. It does not define the
+This revision assigns identifier `0x0004`, the deadlines capability, which
+gates the optional metadata identifier `0x0001`. It does not define the
 handshake exchange or its payloads, which Handshake owns, and it defines no
-frame kind, operation, metadata identifier, result code or error class a
-capability would gate.
+frame kind, operation, result code or error class a capability would gate.
 
-An engineer implementing this document alone can offer and accept a
-capability set, ignore an identifier it does not assign, and reject the two
-handshake payloads that violate the entry rules.
+An engineer implementing this document alone can offer and accept the
+capability set this revision assigns, ignore an identifier it does not
+assign, and reject the two handshake payloads that violate the entry rules.
 
 ## The Capability Identifier Domain
 
@@ -31,9 +30,10 @@ A capability identifier is a `u16`. The whole domain is covered here:
 
 | Value | Meaning |
 |---|---|
-| `0x0000..0xFFFF` | unassigned |
+| `0x0004` | deadlines |
+| `0x0000..0x0003`, `0x0005..0xFFFF` | unassigned |
 
-Protocol version 0 assigns no capability identifier at revision v0.5.1. No
+Protocol version 0 assigns identifier `0x0004` at revision v0.6.0. No
 value is reserved as never valid and none is reserved for a later
 assignment in particular.
 
@@ -87,8 +87,8 @@ gated behavior legal.
 A receiver that meets a frame a capability gates on a connection whose
 accepted set does not name that capability MUST treat the frame as a
 protocol violation and close the connection. This revision assigns no
-capability, so no frame is gated and the rule binds the revisions that
-assign one.
+capability that gates a frame kind, so no frame is gated here and the rule
+binds the revision that assigns one.
 
 ## Dependencies
 
@@ -98,8 +98,8 @@ the capability the dependency names. When it does not, the accepted set
 omits both, and the offer of the dependent capability alone resolves to an
 accepted set that contains neither.
 
-This revision assigns no capability identifier, so it declares no
-dependency.
+This revision assigns one capability identifier, and it declares no
+dependency for it.
 
 ## Growth
 
@@ -110,18 +110,40 @@ that it carries none, every capability it depends on, every frame kind,
 operation, metadata identifier, result code and error class it gates, and
 the behavior a peer without it receives instead.
 
-Assigning an identifier is an addition. A peer built on this revision never
-offers an identifier it does not assign and never meets one, because the
-accepted set is always a subset of the offered set and the peer offers
+Assigning an identifier is an addition. A peer built on an earlier revision
+never offers an identifier it does not assign and never meets one, because
+the accepted set is always a subset of the offered set and the peer offers
 none.
+
+## Deadlines
+
+Identifier `0x0004` is the deadlines capability. It gates metadata
+identifier `0x0001`, the deadline entry: a connection that did not accept
+it has no deadlines.
+
+The client offers it in the handshake request and the server accepts it in
+the handshake response. It carries no value in either direction: an entry
+carrying this identifier has a value length of zero.
+
+A receiver that meets a deadline entry on a connection whose accepted set
+does not name this capability MUST treat the entry as one it does not
+read: it skips the entry by the rule The Optional Range states, produces
+no failure, and serves the request without a deadline. Metadata states the
+entry's encoding and Request Lifetime states what a deadline does.
+
+A receiver that meets a handshake entry carrying this identifier whose
+value length is not zero MUST ignore the entry and produce no error, by
+the rule An Unassigned Identifier states, and the capability is not
+accepted.
 
 ## The Registry
 
 | Id | Capability | What it gates |
 |---|---|---|
-| `0x0000..0xFFFF` | unassigned | nothing |
+| `0x0004` | deadlines | metadata identifier `0x0001` |
+| `0x0000..0x0003`, `0x0005..0xFFFF` | unassigned | nothing |
 
-Every identifier is unassigned, no identifier is accepted unless a later
-revision assigns it, and every entry is ignored by An Unassigned
-Identifier. The registry covers the whole domain and states no assigned
-value, so no clause of this revision depends on a capability.
+Every unassigned identifier is ignored by An Unassigned Identifier, and an
+identifier this revision assigns enters the accepted set only when the
+handshake response names it and the request offered it. The registry covers
+the whole domain.

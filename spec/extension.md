@@ -4,7 +4,7 @@ description: The property that decides whether a change invalidates a peer built
 protocol_version: 0
 revision: v0.5.1
 status: draft
-order: 11
+order: 12
 ---
 
 # Extension and Version Policy

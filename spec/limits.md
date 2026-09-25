@@ -4,7 +4,7 @@ description: The pre-negotiation and negotiated size bounds of protocol version 
 protocol_version: 0
 revision: v0.5.1
 status: draft
-order: 10
+order: 11
 ---
 
 # Limits

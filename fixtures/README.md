@@ -1,8 +1,8 @@
 ---
 title: Fixture Corpus (Non-Normative)
-description: The form of the fixture corpus published with revision v0.2.0 of protocol version 0.
+description: The form of the fixture corpus published with revision v0.3.0 of protocol version 0.
 protocol_version: 0
-revision: v0.2.0
+revision: v0.3.0
 normative: false
 ---
 
@@ -93,7 +93,7 @@ Every fixture is a JSON object carrying all eight fields:
 | Field | Type | Meaning |
 |---|---|---|
 | `id` | string | the stable identifier, matching the file path |
-| `revision` | string | the specification revision the fixture represents, `v0.2.0` in this corpus |
+| `revision` | string | the specification revision the fixture represents, `v0.3.0` in this corpus |
 | `protocol_version` | number | the protocol version the fixture represents, `0` in this corpus |
 | `clause` | string | the title of the section that binds the rule the fixture exercises |
 | `direction` | string | `decode`, `encode`, or `both` |
@@ -123,6 +123,19 @@ cannot be stated is removed rather than kept.
 |---|---|---|
 | `role` | when the outcome depends on which peer reads the bytes | `client` or `server`, the peer the bytes are offered to |
 | `in_flight` | when the outcome depends on which requests are in flight at the receiver | the request ids in flight at the receiver, as an array, in the order those requests entered flight |
+| `state` | when the outcome depends on the connection state | `pre-negotiation` or `negotiated`, the state the receiver is in; absent means `negotiated` |
+| `limits` | when the outcome depends on a negotiated bound | an object with `maximum_frame_size` and `maximum_metadata_size`, the bounds in force; absent means the pre-negotiation constants, 65536 and 4096 |
+
+`state` is present only when the connection state changes the outcome. A
+fixture that states no state asserts its outcome at a receiver in the
+negotiated state, where every state check an ordinary frame meets passes.
+The pre-negotiation state is the exception a fixture states.
+
+`limits` is present only when the outcome depends on the bound in force. An
+absent member means the pre-negotiation constants, which is what a fixture
+that states no negotiated bound is decided under. A fixture whose outcome
+depends on a negotiated bound carries `limits`, because the frame's own
+bytes do not carry the bound.
 
 A field name is the name the specification gives the field, with each
 space written as an underscore, so `metadata length` is `metadata_length`.
@@ -163,15 +176,33 @@ permit.
 ## Entries of a region
 
 A field whose value is a region of entries is carried as a JSON array, one
-object per entry, in wire order. The metadata region is the field
-`metadata`, and an absent region is the empty array.
+object per entry, in wire order. An absent region is the empty array. Two
+regions exist:
+
+```text
+metadata            the frame's metadata region, a member of `fields`
+capability_entries  a handshake payload's capability entries, a member of
+                    `fields`
+```
+
+A metadata entry carries:
 
 | Member | Meaning |
 |---|---|
 | `identifier` | the entry's identifier, as a number |
 | `value` | the entry's value bytes, as a byte string |
 
-An entry's `value length` is not carried. It is the length of `value`.
+A capability entry carries:
+
+| Member | Meaning |
+|---|---|
+| `capability_id` | the entry's identifier, as a number |
+| `value` | the entry's value bytes, as a byte string |
+
+An entry's `value length` is not carried. It is the length of `value`. A
+handshake payload's `capability count` is derived from the length of
+`capability_entries` on an encoder's input, so it is not carried there; a
+decoder reads it, so it is carried in `expect.fields`.
 
 An encoder is given what it cannot derive. On `encode` and `both`,
 `input.fields` carries `metadata`, carries the payload as `payload` where
@@ -255,7 +286,7 @@ real fixture carries.
 
 {
   "id": "<the identifier, matching the file path>",
-  "revision": "v0.2.0",
+  "revision": "v0.3.0",
   "protocol_version": 0,
   "clause": "<the title of the section that binds the rule>",
   "direction": "decode",
@@ -278,7 +309,7 @@ offers. This is `header/minimum-legal-frame`, in full:
 ```json
 {
   "id": "header/minimum-legal-frame",
-  "revision": "v0.2.0",
+  "revision": "v0.3.0",
   "protocol_version": 0,
   "clause": "Frame Header",
   "direction": "both",
@@ -319,17 +350,16 @@ the field is a `u64`.
 ## Boundaries no frame of this revision reaches
 
 The corpus states the minimum and the maximum legal value of every header
-field that a frame of this revision can carry. Three boundaries are
-outside it, and each one is outside it because the contract forbids the
-frame that would carry it, not because the corpus form cannot state it.
+field that a frame of this revision can carry. Two boundaries are outside
+it, and each one is outside it because the contract forbids the frame that
+would carry it, not because the corpus form cannot state it.
 
 | Boundary | Why no fixture of this corpus states it | What removes it |
 |---|---|---|
-| `kind` at REQUEST | protocol version 0 assigns no opcode, so a peer of this revision sends no REQUEST frame | the revision that assigns an opcode |
 | `code` at `0xFFFF` | the value is unassigned in all three of the spaces the field draws from | the revision that assigns the value at the top of one of those spaces |
 | `metadata length` above zero | protocol version 0 assigns no metadata identifier, so no frame a peer may send carries an entry | the revision that assigns a metadata identifier |
 
-Each of the three is covered on the decode side, where a fixture states
+Each of the two is covered on the decode side, where a fixture states
 what a receiver does when a peer sends it regardless.
 
 ## Revision binding

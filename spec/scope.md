@@ -1,8 +1,8 @@
 ---
 title: Scope and Status
-description: What revision v0.2.0 of protocol version 0 defines and does not define, with the requirement levels, version axes, terminology, and limitations of the document set.
+description: What revision v0.3.0 of protocol version 0 defines and does not define, with the requirement levels, version axes, terminology, and limitations of the document set.
 protocol_version: 0
-revision: v0.2.0
+revision: v0.3.0
 status: draft
 order: 1
 ---
@@ -12,11 +12,14 @@ order: 1
 ## Scope
 
 This document set defines protocol version 0 of the RP-1 Native Protocol,
-at revision v0.2.0.
+at revision v0.3.0.
 
 It defines the framing and codec surface: how a frame is laid out on the
 wire, what every value a frame carries means, and how a receiver admits or
-refuses one.
+refuses one. It defines the connection surface: the states a connection
+occupies, the handshake that moves a connection to a usable state, version
+negotiation, the limits the handshake derives, and the capability
+mechanism.
 
 This revision defines:
 
@@ -37,6 +40,14 @@ the error classes it assigns, each with its scope and its completion
 failure scope, and the principle that decides it
 the order in which a receiver admits a frame, and that the first failure
   wins
+the connection states, which frames are legal in each, and the failure a
+  frame outside them produces
+the handshake that opens a connection, both payloads
+version negotiation, and the outcome when no version is mutually supported
+the negotiated maximum frame size and maximum metadata size, with their
+  floors and their ceilings
+the capability identifier domain, the capability entry layout, and
+  capability negotiation, assigning no capability identifier
 the receiver behavior for every input this surface permits
 the extension and version policy for every value space it defines
 ```
@@ -44,23 +55,23 @@ the extension and version policy for every value space it defines
 This revision does not define:
 
 ```text
-the handshake, or any other exchange that opens a connection
-negotiation, or any negotiated value
-the capability registry, and it assigns no capability identifier
-any operation, and it assigns no opcode
+a capability identifier, and gated behavior: the registry mechanism is
+  defined and the whole identifier domain is unassigned
+any operation other than the handshake, and any opcode other than the
+  handshake
 conformance layers, role obligations, and any required minimum
 ```
 
 An engineer implementing this revision alone writes an encoder and a
-decoder for every frame kind it assigns, and receiver behavior for every
-input it permits.
+decoder for every frame kind it assigns, completes the handshake, and
+reaches a usable connection. Running a request requires the revision that
+assigns an operation.
 
-That is the whole of what this revision produces. It defines no exchange,
-so an implementation of it does not interoperate with a peer and is not a
-client. Known Limitations states what that costs and what an implementer
-does in the meantime.
+This revision defines a usable connection and no work a server performs
+beyond the handshake. Known Limitations states what that costs and what an
+implementer does in the meantime.
 
-Revision v0.2.0 publishes the documents of this set and the fixture corpus
+Revision v0.3.0 publishes the documents of this set and the fixture corpus
 that accompanies them. A fixture carries the same authority as the prose
 it exercises. Supporting material states that it is not normative.
 
@@ -138,85 +149,57 @@ defines is defined in that section, and is not restated here.
 
 A key is an opaque byte string. A value is an opaque byte string. Neither
 is required to be UTF-8, and the protocol interprets neither. This
-revision assigns no opcode, so no frame region it defines carries a key or
-a value; the two terms are fixed here because the meanings this revision
-states for assigned wire values use them.
+revision assigns no opcode other than the handshake, so no frame region it
+defines carries a key or a value; the two terms are fixed here because the
+meanings revisions of this set state for assigned wire values use them.
 
 ## Known Limitations
 
 A limitation stated here is a property of this contract. It is not a
 statement about what any implementation has built.
 
-This revision defines framing and no exchange. Two peers that implement it
-completely still cannot complete a request, because no clause of this
-revision defines a request being made or answered. An implementation of
-this revision is a codec: it is not a client, and it does not interoperate
-with a deployed peer.
+This revision defines a usable connection and no operation beyond the
+handshake. Two peers that implement it completely complete the handshake
+and reach the negotiated state, and then cannot complete a request,
+because no clause of this revision defines work a server performs. An
+implementation of this revision connects and runs no operation.
 
-The first five limitations below follow from that. The last does not: it
+The first three limitations below follow from that. The last does not: it
 states which requirement of this revision no fixture of its corpus can
 fail against.
 
-### No handshake
+### No capability assigned
 
-What is limited: this revision defines no exchange that opens a
-connection. A peer has no defined way to announce itself, and no defined
-way to learn what the peer it connected to implements.
+What is limited: this revision defines the capability mechanism but
+assigns no capability identifier, so no gated behavior exists and no
+capability can be exercised beyond being offered and accepted.
 
-What this contract provides: the frame format, and the bounds that apply
-with no prior exchange, so a decoder is complete without a handshake.
+What this contract provides: the capability identifier domain, the
+capability entry layout, the receiver rule for an unassigned identifier,
+the rule for a value of the wrong length, the rule that a responder never
+accepts a capability the offerer did not offer, and the dependency rule.
 
-What an implementer does: implements the codec, and derives no connection
-opening sequence from this revision. An implementer who needs to reach a
-deployed peer waits for the revision that defines the exchange.
+What an implementer does: offers no identifier, accepts none, and treats
+an identifier it does not assign by the ignore rule the section that owns
+the capability space states.
 
-What would remove it: a revision that defines the exchange that opens a
-connection.
-
-### No negotiation
-
-What is limited: no value this contract carries is negotiated. Two peers
-cannot agree on a larger frame size, and cannot agree on any other
-parameter.
-
-What this contract provides: bounds that are constants of this revision
-and bind both peers from the first byte of the connection, with no
-exchange before them.
-
-What an implementer does: enforces the bounds this revision states, and
-implements no negotiated value. The section that states each bound states
-what a receiver does with a frame that exceeds it.
-
-What would remove it: a revision that defines negotiation, the negotiated
-bound, which peer proposes it, and which peer sets its ceiling.
-
-### No capability
-
-What is limited: this revision assigns no capability identifier, and
-defines no mechanism to offer one or to accept one.
-
-What this contract provides: every behavior it defines is available on
-every connection, gated by nothing.
-
-What an implementer does: implements no gated behavior, and treats a value
-this revision does not assign by the receiver rule stated in the section
-that owns that value space.
-
-What would remove it: a revision that defines negotiation together with
-the capability registry, which one section owns.
+What would remove it: a revision that assigns a capability identifier
+together with the surface the identifier gates.
 
 ### No operation
 
-What is limited: this revision assigns no opcode, so it names no work a
-server performs and no payload a request carries.
+What is limited: this revision assigns no opcode other than the handshake,
+so it names no work a server performs and no payload a request carries
+beyond the handshake.
 
-What this contract provides: the frame that carries an operation, and the
-receiver rule for an opcode this revision does not assign, so a later
-revision assigns one without invalidating a peer built on this one.
+What this contract provides: the frame that carries an operation, the
+handshake opcode, and the receiver rule for an opcode this revision does
+not assign, so a later revision assigns one without invalidating a peer
+built on this one.
 
-What an implementer does: implements the frame, and derives no operation
-from this revision. An implementer who needs an operation waits for the
-revision that assigns one.
+What an implementer does: implements the handshake, and derives no
+operation from this revision. An implementer who needs an operation waits
+for the revision that assigns one.
 
 What would remove it: a revision that assigns an opcode and states its
 payload in both directions.
@@ -229,8 +212,8 @@ implementation would be measured against, and no form a conformance claim
 takes.
 
 What this contract provides: the normative fixture corpus published with
-this revision, which an implementation runs against its own encoder and
-decoder.
+this revision, which an implementation runs against its own encoder,
+decoder, and handshake.
 
 What an implementer does: states which fixtures of this revision's corpus
 its implementation passes, rather than claiming conformance to the

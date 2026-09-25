@@ -2,7 +2,7 @@
 title: Framing
 description: The byte order, the frame header, the frame kinds protocol version 0 assigns, the flags field, the length arithmetic a receiver runs before it allocates, and the order in which it admits a frame.
 protocol_version: 0
-revision: v0.2.0
+revision: v0.3.0
 status: draft
 order: 2
 ---
@@ -103,9 +103,9 @@ An absent metadata region is a `metadata length` of zero.
 ### payload length
 
 `payload length` states the length of the payload in bytes. Every value
-of the width is a valid encoding of the field. Frame Size Limits states
-the bound that applies and what a receiver does with a frame that exceeds
-it.
+of the width is a valid encoding of the field. Pre-Negotiation Bounds and
+Negotiated Bounds state the bound that applies and what a receiver does
+with a frame that exceeds it.
 
 ### request id
 

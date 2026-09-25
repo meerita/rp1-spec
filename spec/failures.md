@@ -2,9 +2,9 @@
 title: Failures
 description: The error classes protocol version 0 assigns, the scope and completion certainty of each, the ERROR frame payload, and the rule for an unassigned class.
 protocol_version: 0
-revision: v0.2.0
+revision: v0.3.0
 status: draft
-order: 7
+order: 9
 ---
 
 # Failures

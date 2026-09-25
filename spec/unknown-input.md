@@ -1,10 +1,10 @@
 ---
 title: Behavior for Unknown Input
-description: Every input protocol version 0 permits a peer to receive at revision v0.2.0, in the order a receiver meets them, with the error class and the failure scope each one produces, the section that binds that outcome, and the fixtures that prove it.
+description: Every input protocol version 0 permits a peer to receive at revision v0.3.0, in the order a receiver meets them, with the error class and the failure scope each one produces, the section that binds that outcome, and the fixtures that prove it.
 protocol_version: 0
-revision: v0.2.0
+revision: v0.3.0
 status: draft
-order: 10
+order: 12
 ---
 
 # Behavior for Unknown Input
@@ -58,10 +58,10 @@ implementation produces that row's outcome.
 | 1 | fewer than 20 bytes held | none, the receiver requires 20 bytes | none | The two steps that are not failures | `framing/incomplete-header-empty-buffer`, `framing/incomplete-header-one-byte-short`, `correlation/partial-frame-retires-no-request` |
 | 2 | `version` carries a value other than 0 | unsupported protocol version | connection-fatal | Frame Header | `header/version-field-is-one`, `header/version-field-at-maximum` |
 | 3 | `kind` carries a value this revision does not assign | protocol violation | connection-fatal | Frame Kinds | `header/frame-kind-reserved-zero`, `header/unassigned-frame-kind` |
-| 4 | the total length exceeds the maximum frame size | resource limit | connection-fatal | The maximum frame size | `limits/frame-one-byte-past-the-maximum`, `limits/metadata-length-exceeds-the-frame`, `framing/oversize-frame-refused-before-the-body-arrives` |
-| 4 | the total length exceeds the maximum frame size and wraps a computation narrower than 64 bits | resource limit | connection-fatal | The maximum frame size | `framing/total-length-that-wraps-a-32-bit-computation` |
+| 4 | the total length exceeds the maximum frame size in force | resource limit | connection-fatal | Pre-Negotiation Bounds, Negotiated maximum frame size | `limits/frame-one-byte-past-the-maximum`, `limits/metadata-length-exceeds-the-frame`, `limits/frame-above-negotiated`, `framing/oversize-frame-refused-before-the-body-arrives` |
+| 4 | the total length exceeds the maximum frame size and wraps a computation narrower than 64 bits | resource limit | connection-fatal | Pre-Negotiation Bounds | `framing/total-length-that-wraps-a-32-bit-computation` |
 | 5 | `flags` carries a non-zero bit | protocol violation | connection-fatal | Flags | `header/flags-single-reserved-bit-set`, `header/flags-all-bits-set` |
-| 6 | `metadata length` exceeds the maximum metadata size | malformed request | connection-fatal | The maximum metadata size | `limits/metadata-region-one-byte-past-the-maximum` |
+| 6 | `metadata length` exceeds the maximum metadata size in force | malformed request | connection-fatal | Pre-Negotiation Bounds, Negotiated maximum metadata size | `limits/metadata-region-one-byte-past-the-maximum`, `limits/metadata-region-above-negotiated` |
 | 7 | fewer bytes held than the total length | none, the receiver requires the total length | none | The two steps that are not failures | `framing/incomplete-body-one-byte-short`, `limits/frame-at-the-maximum`, `limits/metadata-region-at-the-maximum` |
 | 8 | the entries of the metadata region do not fill it exactly | malformed request | connection-fatal | Region Fill | `metadata/region-ends-mid-entry`, `metadata/entry-claims-more-than-the-region-holds` |
 | 9 | `kind` travels from the wrong direction | protocol violation | connection-fatal | Direction | `header/frame-kind-from-the-wrong-direction-request-at-a-client`, `header/frame-kind-from-the-wrong-direction-response-at-a-server` |
@@ -109,8 +109,37 @@ A frame refused by one of these rows was admitted by the order, and a
 frame refused by the order reaches none of them. The order decides first
 in every case.
 
-This revision assigns no opcode, so it defines no payload for a REQUEST
-frame and no check over one.
+A REQUEST frame carrying the handshake opcode carries the handshake request
+payload, and Validating a handshake payload, in Handshake, states the
+checks over it. This revision defines no payload for a REQUEST frame
+carrying any other opcode, so it states no check over one.
+
+## Inputs the Connection State and the Handshake Decide
+
+The inputs below are decided by the state a connection occupies or by a
+check over a handshake payload, which runs after step 15 on an admitted
+handshake frame. Each names the class and the scope its section states.
+
+| The input | The class | The scope | The section that binds it | The fixtures |
+|---|---|---|---|---|
+| a frame other than the handshake request in the pre-negotiation state | protocol violation | connection-fatal | Before the Handshake | `lifecycle/frame-before-handshake` |
+| a second handshake request in the negotiated state | protocol violation | connection-fatal | After the Handshake | `lifecycle/repeated-handshake` |
+| a handshake request payload shorter than ten bytes | malformed request | connection-fatal | Validating a handshake payload | `handshake/request-payload-shorter-than-its-head` |
+| a handshake response payload shorter than ten bytes | malformed request | connection-fatal | Validating a handshake payload | `handshake/response-payload-shorter-than-its-head` |
+| capability entries that do not fill the payload exactly | malformed request | connection-fatal | Validating a handshake payload | `handshake/entries-do-not-fill-the-payload` |
+| capability entries that are not strictly ascending | malformed request | connection-fatal | Validating a handshake payload | `handshake/duplicate-capability-id` |
+| a version range whose maximum is below its minimum | malformed request | connection-fatal | The handshake request payload | `handshake/version-range-maximum-below-minimum` |
+| no mutually supported version | unsupported protocol version | connection-fatal | Version Negotiation | `handshake/no-mutual-version` |
+| a negotiated version above 255 | malformed request | connection-fatal | Version Negotiation | `handshake/negotiated-version-above-header-width` |
+| a negotiated maximum frame size below 65536 | malformed request | connection-fatal | Negotiated maximum frame size | `handshake/negotiated-size-below-the-floor` |
+| a negotiated maximum metadata size below 4096 | malformed request | connection-fatal | Negotiated maximum metadata size | `handshake/negotiated-metadata-below-the-floor` |
+| a capability entry carrying an unassigned identifier | none, the receiver ignores it | none | An Unassigned Identifier | `handshake/unassigned-capability-id-ignored`, `handshake/capability-entry-with-a-value-ignored` |
+| an accepted capability the offerer did not offer | protocol violation | connection-fatal | Offering and Acceptance | `handshake/acceptance-names-unoffered-capability` |
+
+The row for an unassigned identifier and the row for a wrong-length value
+are the two that are not failures. A receiver that meets either resumes at
+the next entry, as An Unassigned Identifier states, and the handshake
+continues.
 
 ## The Fixtures That Pin the Order
 

@@ -1,6 +1,6 @@
 {
   "id": "correlation/partial-frame-retires-no-request",
-  "revision": "v0.2.0",
+  "revision": "v0.3.0",
   "protocol_version": 0,
   "clause": "A Connection That Ends",
   "direction": "decode",

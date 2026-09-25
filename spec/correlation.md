@@ -2,7 +2,7 @@
 title: Correlation
 description: Request identity: the field that names a request, the peer that allocates it, its reserved value, the state each peer holds for it, the frame that retires a request, and what a receiver does with a frame it cannot correlate.
 protocol_version: 0
-revision: v0.2.0
+revision: v0.3.0
 status: draft
 order: 4
 ---
@@ -24,13 +24,15 @@ It states the three checks Frame Admission Order places at steps 10, 11
 and 12. Each is stated once, over every frame kind, rather than once per
 kind.
 
-It defines no exchange. This revision assigns no opcode, so no request it
-describes names work a server performs. What This Revision Reaches states
-which of the rules below a conforming peer meets at this revision.
+Handshake defines the exchange that opens a connection. This revision
+assigns the handshake opcode and no other, so no request it describes
+names work a server performs beyond the handshake. What This Revision
+Reaches states which of the rules below a conforming peer meets at this
+revision.
 
-It defines no bound on the number of requests in flight at a peer. Frame
-Size Limits states the two bounds this revision fixes, and neither of them
-counts requests.
+It defines no bound on the number of requests in flight at a peer. Limits
+states the size bounds this revision fixes, and none of them counts
+requests.
 
 ## Request Identity
 
@@ -284,31 +286,40 @@ request that received no class received no statement. An initiator that
 must know re-reads what the request would have changed, on a new
 connection.
 
-This revision assigns no opcode, so no request it defines names work a
-server performs. The rule is stated here because it is a property of the
-correlation mechanism and not of any operation. It holds for every
-operation a later revision assigns, and an initiator built on this
-revision that concluded otherwise would be wrong from the first one.
+This revision assigns the handshake opcode and no other, so the only
+request it defines is the handshake. The rule is stated here because it is
+a property of the correlation mechanism and not of any operation. It holds
+for every operation a later revision assigns, and an initiator built on
+this revision that concluded otherwise would be wrong from the first one.
 
 ## What This Revision Reaches
 
-Frame Admission Order places the `code` check at step 13, and this
-revision assigns no opcode, so a server answers every REQUEST frame
-reaching that step with the unsupported operation error class for that
-request and keeps the connection open. That ERROR frame is the request's
-terminal frame.
+A REQUEST frame carrying the handshake opcode is the handshake request.
+Before the Handshake states that it is legal only in the pre-negotiation
+state, and that a REQUEST frame carrying any other opcode in that state is
+a protocol violation.
+
+Frame Admission Order places the `code` check at step 13. In the
+negotiated state, this revision assigns no opcode other than the handshake,
+so a server answers a REQUEST frame carrying any other opcode with the
+unsupported operation error class for that request and keeps the connection
+open. That ERROR frame is the request's terminal frame.
 
 At this revision, therefore:
 
 ```text
 a request enters flight at a client when the client has written its
-  REQUEST frame, and leaves flight when the client has read the ERROR
-  frame that refuses it
+  REQUEST frame, and leaves flight when the client has read its terminal
+  frame
 a request enters flight at a server when the server has carried the
   REQUEST frame through step 12 of Frame Admission Order, and leaves
-  flight when the server has written that ERROR frame
-no conforming server sends a RESPONSE frame, because this revision
-  assigns no operation that could succeed
+  flight when the server has written the terminal frame that retires it
+the handshake request is answered by a RESPONSE frame carrying the
+  success result code, or by an ERROR frame when the handshake fails
+a REQUEST frame carrying any other opcode in the negotiated state is
+  answered by an ERROR frame carrying the unsupported operation class
+no conforming server sends a RESPONSE frame for any other opcode,
+  because this revision assigns no operation that could succeed
 ```
 
 A client implements the rules above for a RESPONSE frame whether or not a

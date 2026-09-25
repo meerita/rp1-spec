@@ -130,11 +130,6 @@ A receiver refuses a REQUEST frame carrying an unassigned opcode at step 13
 whatever its payload carries, and interprets no byte of that payload to
 decide.
 
-Every value of `payload length` is a legal encoding of a REQUEST frame at
-this revision, within the frame size bound in force. A receiver
-refuses a REQUEST frame carrying an unassigned opcode at step 13 whatever
-its payload carries, and interprets no byte of that payload to decide.
-
 ## The Liveness Operation
 
 `PING` is opcode `0x0002`. It asks the responder to answer. It names no

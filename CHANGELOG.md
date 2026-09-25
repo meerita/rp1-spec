@@ -19,6 +19,81 @@ always produces a new revision.
 Each entry states what changed, whether a peer built against the previous
 revision still conforms, and what such a peer must do when it does not.
 
+## [0.6.0]
+
+Classification: addition. The revision adds the opcode registry and the
+five ungated operations and changes no requirement revision v0.4.0
+publishes. A peer built against v0.4.0 conforms to v0.4.0 unchanged. That
+revision assigns no operation, so such a peer does not run a request until
+it implements the operations this revision adds; against a v0.6.0 request
+it answers the unsupported operation class for that request and keeps the
+connection open.
+
+This revision defines the five operations a client reaches without
+negotiating a capability: the liveness operation `PING`, the reads `GET`
+and `EXISTS`, the write `SET`, and the delete `DEL`. It assigns their
+opcodes, defines each request and response payload, states the argument
+encoding they share, states the result codes each reaches, and states the
+class and scope of every malformed payload.
+
+The opcode space is the protocol's cheapest extension point. It assigned
+`0x0001` at v0.3.0 and reserved the rest. This revision assigns the next
+five values in that reserved range, so a peer built on an earlier revision
+meets each new opcode by the rule it already carries and stays able to
+serve.
+
+### Added
+
+- The opcodes `PING` `0x0002`, `GET` `0x0003`, `SET` `0x0004`, `DEL`
+  `0x0005` and `EXISTS` `0x0006`, and the request and response payload of
+  each. The whole opcode domain is covered, and the range `0x0007..0xFFFF`
+  stays reserved.
+- The shared argument encoding. A key is an opaque byte string and a value
+  is an opaque byte string. `GET`, `DEL` and `EXISTS` carry the key alone,
+  its length the payload length. `SET` carries a `u32` key length, then the
+  key, then the value, whose length is derived; a `SET` whose `4 + key
+  length` exceeds the payload length is a malformed request. An empty key
+  and an empty value are each a legal value.
+- The result codes the operations reach. `GET` answers success, absent and
+  the value-held-outside-memory code; a success with a zero-byte payload is
+  a present empty value and the absent code is a missing key. `EXISTS` and
+  `DEL` answer success and absent. `SET` answers success.
+- The class and scope of each malformed payload: a `SET` payload shorter
+  than four bytes, a `SET` key length that overruns the payload, and a
+  `PING` payload that is not empty are malformed requests, connection-fatal.
+
+### Fixed
+
+- Three fixtures carried opcode `0x0002` as an unassigned value. This
+  revision assigns `0x0002` to `PING`, so each now carries `0x0007`, still
+  unassigned above the assigned range. Each keeps its identifier, its
+  clause, its expected class and its scope.
+
+### Changed
+
+- Scope and Status states that this revision defines the five ungated
+  operations and removes the limitation that no operation exists.
+- Failures states that `overloaded` and `wrong type` now have producers:
+  a write that cannot be admitted answers `overloaded`, and a byte write
+  against a key held in another representation answers `wrong type`. `DEL`
+  never answers `wrong type`, and `EXISTS` answers presence whatever
+  representation a key holds.
+- Results states that the success payload of each operation is defined by
+  this revision, and that `GET` is the operation that carries a value the
+  value-held-outside-memory code states the length of.
+- Extension and Version Policy, Correlation and Behavior for Unknown Input
+  state the assignments and the rows this revision adds.
+- Every document and every fixture states revision v0.6.0. The corpus of
+  revision v0.4.0 is preserved at the tag that published it.
+
+### Added fixtures
+
+- 18 fixtures under `operations/`: a request and a response for each of the
+  five operations, the two structural failures a `SET` payload can produce,
+  a `PING` payload that is not empty, an empty key, and a key that carries a
+  NUL byte.
+- The corpus is 107 fixtures.
+
 ## [0.4.0]
 
 Classification: defect correction. No clause of protocol version 0

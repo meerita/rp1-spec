@@ -19,7 +19,9 @@ wire, what every value a frame carries means, and how a receiver admits or
 refuses one. It defines the connection surface: the states a connection
 occupies, the handshake that moves a connection to a usable state, version
 negotiation, the limits the handshake derives, and the capability
-mechanism.
+mechanism. It defines the operation surface: the five ungated operations,
+the request and response payload of each, and the argument encoding they
+share.
 
 This revision defines:
 
@@ -46,6 +48,9 @@ the handshake that opens a connection, both payloads
 version negotiation, and the outcome when no version is mutually supported
 the negotiated maximum frame size and maximum metadata size, with their
   floors and their ceilings
+the opcode registry, the five ungated operations, and the request and
+  response payload of each
+the argument encoding the operations share, and the validation each runs
 the capability identifier domain, the capability entry layout, and
   capability negotiation, assigning no capability identifier
 the receiver behavior for every input this surface permits
@@ -57,19 +62,17 @@ This revision does not define:
 ```text
 a capability identifier, and gated behavior: the registry mechanism is
   defined and the whole identifier domain is unassigned
-any operation other than the handshake, and any opcode other than the
-  handshake
+any capability-gated operation, and any operation that needs a capability
 conformance layers, role obligations, and any required minimum
 ```
 
 An engineer implementing this revision alone writes an encoder and a
-decoder for every frame kind it assigns, completes the handshake, and
-reaches a usable connection. Running a request requires the revision that
-assigns an operation.
+decoder for every frame kind it assigns, completes the handshake, reaches a
+usable connection, and runs the five ungated operations.
 
-This revision defines a usable connection and no work a server performs
-beyond the handshake. Known Limitations states what that costs and what an
-implementer does in the meantime.
+This revision defines a usable connection and the five ungated operations.
+Known Limitations states what the revision leaves for a later one and what
+an implementer does in the meantime.
 
 Revision v0.6.0 publishes the documents of this set and the fixture corpus
 that accompanies them. A fixture carries the same authority as the prose
@@ -148,25 +151,22 @@ defines is defined in that section, and is not restated here.
 | receiver | the peer that reads a frame |
 
 A key is an opaque byte string. A value is an opaque byte string. Neither
-is required to be UTF-8, and the protocol interprets neither. This
-revision assigns no opcode other than the handshake, so no frame region it
-defines carries a key or a value; the two terms are fixed here because the
-meanings revisions of this set state for assigned wire values use them.
+is required to be UTF-8, and the protocol interprets neither. The five
+ungated operations carry them, and Operations states the encoding.
 
 ## Known Limitations
 
 A limitation stated here is a property of this contract. It is not a
 statement about what any implementation has built.
 
-This revision defines a usable connection and no operation beyond the
-handshake. Two peers that implement it completely complete the handshake
-and reach the negotiated state, and then cannot complete a request,
-because no clause of this revision defines work a server performs. An
-implementation of this revision connects and runs no operation.
+This revision defines a usable connection and the five ungated operations.
+No capability is assigned, so no gated operation exists, and no operation
+in this revision needs one. An implementation of this revision connects,
+negotiates, and runs the five operations.
 
-The first three limitations below follow from that. The last does not: it
-states which requirement of this revision no fixture of its corpus can
-fail against.
+The first two limitations below follow from the absent capability. The last
+does not: it states which requirement of this revision no fixture of its
+corpus can fail against.
 
 ### No capability assigned
 
@@ -185,24 +185,6 @@ the capability space states.
 
 What would remove it: a revision that assigns a capability identifier
 together with the surface the identifier gates.
-
-### No operation
-
-What is limited: this revision assigns no opcode other than the handshake,
-so it names no work a server performs and no payload a request carries
-beyond the handshake.
-
-What this contract provides: the frame that carries an operation, the
-handshake opcode, and the receiver rule for an opcode this revision does
-not assign, so a later revision assigns one without invalidating a peer
-built on this one.
-
-What an implementer does: implements the handshake, and derives no
-operation from this revision. An implementer who needs an operation waits
-for the revision that assigns one.
-
-What would remove it: a revision that assigns an opcode and states its
-payload in both directions.
 
 ### No conformance definition
 

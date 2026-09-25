@@ -1,6 +1,6 @@
 ---
 title: Operations
-description: Where an opcode appears in a frame, the whole domain of the opcode space, the opcode protocol version 0 assigns at this revision, what a receiver does with an opcode protocol version 0 does not assign, and what a later revision does when it assigns one.
+description: Where an opcode appears in a frame, the whole domain of the opcode space, the opcodes protocol version 0 assigns at this revision, the request and response payload of each operation, the argument encoding they share, the validation each runs, what a receiver does with an opcode this revision does not assign, and what a later revision does when it assigns one.
 protocol_version: 0
 revision: v0.4.0
 status: draft
@@ -13,14 +13,23 @@ order: 7
 
 This document defines the opcode space: where an opcode appears in a
 frame, the whole domain of the field that carries it, the opcodes this
-revision assigns, what a receiver does with an opcode this revision does
-not assign, and what a later revision does when it assigns one.
+revision assigns, the request and response payload of each operation, the
+argument encoding the operations share, the validation each runs, what a
+receiver does with an opcode this revision does not assign, and what a
+later revision does when it assigns one.
 
-It assigns one opcode, the handshake, and reserves the rest of the space.
-Handshake owns the handshake request payload and the rule for when the
-handshake request is legal. No other operation is defined, so this
-document names no other work a server performs and no other payload a
-request carries. Known Limitations states what that costs an implementer.
+It assigns six opcodes: the handshake, and the five ungated operations
+`PING`, `GET`, `SET`, `DEL` and `EXISTS`. Each of the five is reached by a
+peer that offers and negotiates no capability. Handshake owns the handshake
+request payload and the rule for when the handshake request is legal.
+
+It defines no capability-gated operation, and this revision assigns no
+capability. It does not define the result code a response carries, which
+Results owns, nor the failure a request produces, which Failures owns.
+
+An engineer implementing this document alone can run the five ungated
+operations, encode each request, decode each response, and attribute each
+answer to the request it retires.
 
 ## Opcodes
 
@@ -30,15 +39,24 @@ kind. No other frame kind this revision assigns carries an opcode.
 
 The whole domain is covered here:
 
-| Value | Meaning |
-|---|---|
-| `0x0001` | the handshake, defined by Handshake |
-| `0x0000` | reserved |
-| `0x0002..0xFFFF` | reserved |
+| Value | Operation | Capability |
+|---|---|---|
+| `0x0001` | the handshake | none |
+| `0x0002` | `PING` | none |
+| `0x0003` | `GET` | none |
+| `0x0004` | `SET` | none |
+| `0x0005` | `DEL` | none |
+| `0x0006` | `EXISTS` | none |
+| `0x0000` | reserved | |
+| `0x0007..0xFFFF` | reserved | |
 
-No value of the field is reserved as never valid. `0x0000` is reserved on
-the same terms as every value but `0x0001`, and a receiver answers it by
-the rule below.
+The handshake is owned by Handshake. Each of the five operations below it
+is ungated: a peer reaches it without offering or negotiating any
+capability, and the `Capability` column states `none` for every one.
+
+`0x0000` is reserved on the same terms as every value but the six assigned,
+and a receiver answers it by the rule below. No value of the field is
+reserved as never valid.
 
 A peer MUST NOT send a REQUEST frame whose `code` this revision does not
 assign. A receiver that meets one MUST answer the unsupported operation
@@ -47,15 +65,22 @@ a request-scoped failure states what each peer does to answer.
 
 Frame Admission Order places this check at step 13.
 
-A REQUEST frame carrying the assigned opcode is the handshake request.
+A REQUEST frame carrying the handshake opcode is the handshake request.
 Before the Handshake states that it is the only frame legal in the
 pre-negotiation state, and it states the consequence of sending it at any
 other time.
 
+The sections below define the payload each of the five operations carries
+in each direction and the validation it runs on its arguments.
+
 ## The REQUEST frame payload
 
-The handshake request payload is defined by Handshake. It is the only
-payload this revision defines for a REQUEST frame.
+Handshake defines the handshake request payload. Each of the five ungated
+operations defines its request payload below.
+
+A receiver refuses a REQUEST frame carrying an unassigned opcode at step 13
+whatever its payload carries, and interprets no byte of that payload to
+decide.
 
 Every value of `payload length` is a legal encoding of a REQUEST frame at
 this revision, within the frame size bound in force. A receiver

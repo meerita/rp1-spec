@@ -19,6 +19,84 @@ always produces a new revision.
 Each entry states what changed, whether a peer built against the previous
 revision still conforms, and what such a peer must do when it does not.
 
+## [0.3.0]
+
+Classification: addition. The revision adds the connection surface and
+changes no requirement revision v0.2.0 publishes. A peer built against
+v0.2.0 conforms to v0.2.0 unchanged. That revision defines no exchange, so
+such a peer does not interoperate with a v0.3.0 peer until it implements
+the handshake and version negotiation this revision adds.
+
+This revision defines how a connection becomes usable: the connection
+states, the handshake exchange in both directions, version negotiation, the
+bounds the handshake derives, and the capability mechanism. It assigns the
+handshake opcode and no capability identifier, so a connection it produces
+is usable and runs no operation.
+
+This revision answers a mismatch between the fixed maximum frame size of
+v0.2.0 and the value a deployed server negotiates. v0.2.0 fixes 65536 and
+defines no negotiation; a v0.3.0 responder negotiates a maximum frame size
+of `min(max(proposed, 65536), ceiling)` with a ceiling of at least 65536.
+The fixed value becomes the floor of the negotiated value rather than a
+protocol-wide cap, so a value above 65536 is legal after the handshake.
+
+### Added
+
+- Handshake. The three connection states a connection occupies, the frames
+  legal in each, and the failure a frame outside them produces. The first
+  frame of a connection MUST be a REQUEST frame carrying the handshake
+  opcode; any other frame before the handshake completes, and a second
+  handshake after it, is a protocol violation that closes the connection.
+  The handshake request and response payloads, every field with its offset,
+  size and type, the capability entry layout, the checks over each payload,
+  version selection as the highest version a responder supports inside the
+  range the offerer proposed, and the outcome when no version is mutually
+  supported.
+- Capabilities. The capability identifier domain over its whole `u16`
+  width, the offer and acceptance rules, the receiver rule for an
+  unassigned identifier and for a value of the wrong length, the rule that
+  a responder never accepts a capability the offerer did not offer, and the
+  dependency rule. This revision assigns no capability identifier, so the
+  accepted set is empty and nothing is gated.
+- The negotiated maximum frame size and maximum metadata size, with their
+  formulas, floors and ceilings, and which bound is in force before and
+  after the handshake.
+- The handshake opcode `0x0001`. The rest of the opcode space stays
+  reserved, and a REQUEST frame carrying any other opcode is answered with
+  the unsupported operation class for that request.
+
+### Changed
+
+- The maximum frame size of 65536 bytes and the maximum metadata size of
+  4096 bytes are now the pre-negotiation constants. After the handshake the
+  negotiated values are in force. A frame that exceeds the bound in force
+  produces the same class it produced at v0.2.0.
+- Scope and Status now states that this revision defines a usable
+  connection and no operation beyond the handshake.
+- Extension and Version Policy states that the capability identifier space
+  grows by an assignment.
+- Correlation states the request states and the terminal frame of the
+  handshake.
+- Behavior for Unknown Input gains the rows the connection state and the
+  handshake create.
+- Every document and every fixture states revision v0.3.0. The corpus of
+  revision v0.2.0 is preserved at the tag that published it.
+
+### Added fixtures
+
+- 18 fixtures: 14 under `handshake/`, 2 under `lifecycle/`, and 2 under
+  `limits/`. Each states the exact class and scope of a failure it
+  exercises, or the exact fields of a successful frame.
+- The corpus is 89 fixtures.
+
+### Unchanged
+
+Every clause of protocol version 0 that v0.2.0 published and this revision
+does not touch: the frame header layout, the frame kinds, the admission
+order, the metadata region rules, request correlation, the result codes and
+the error classes are the contract v0.2.0 published. The requirement levels
+are unchanged. Every document still carries the status `draft`.
+
 ## [0.2.0]
 
 Classification: defect correction. No clause of protocol version 0

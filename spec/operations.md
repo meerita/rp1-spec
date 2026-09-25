@@ -269,6 +269,45 @@ the key.
 A `DEL` request reaches the success and absent result codes and no other
 result code.
 
+## Argument Validation
+
+A receiver validates the payload of each admitted request before the
+operation runs. The frame passed every check of Frame Admission Order, so
+its boundary is known; the checks here are over the argument the operation
+carries, and they run in the order Checks that follow the order states.
+
+```text
+operation        the check                              the class
+PING             the payload is empty                   malformed request
+GET, DEL, EXISTS no check: every payload is a key      none
+SET              the payload is at least four bytes    malformed request
+SET              4 + key length does not exceed the
+                 payload length                        malformed request
+every operation  a key or a value above the
+                 responder's limit                     invalid argument
+```
+
+A `PING` payload of one byte or more is a malformed request: the operation
+defines no field for those bytes, so they are refused rather than ignored.
+A `GET`, `DEL` or `EXISTS` payload is the whole key, of zero or more bytes,
+so no payload of those three fails a structural check.
+
+The two classes differ because the failures differ. A malformed request
+leaves the extent of the payload unknown, so the receiver cannot trust the
+next frame and the failure is connection-fatal. An invalid argument was
+read whole and refused by the responder, so one request fails and the
+connection keeps serving.
+
+A responder MUST NOT answer a connection-fatal class for a request payload
+whose boundaries it read. A `SET` whose key length exceeds the bytes that
+follow it is a malformed request because the value's extent is unknown; a
+key the responder refuses by size after it read it is an invalid argument,
+request-scoped, which Limits states.
+
+No rejection above uses a capability, and no operation is refused on the
+ground that a capability was not negotiated, because this revision assigns
+no capability.
+
 ## Assigning an Opcode Later
 
 A later revision assigns an opcode as an addition. It needs neither a

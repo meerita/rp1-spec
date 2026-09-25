@@ -1,6 +1,6 @@
 {
   "id": "handshake/negotiated-metadata-below-the-floor",
-  "revision": "v0.6.0",
+  "revision": "v0.5.0",
   "protocol_version": 0,
   "clause": "Negotiated maximum metadata size",
   "direction": "decode",

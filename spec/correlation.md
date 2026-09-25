@@ -2,7 +2,7 @@
 title: Correlation
 description: Request identity: the field that names a request, the peer that allocates it, its reserved value, the state each peer holds for it, the frame that retires a request, and what a receiver does with a frame it cannot correlate.
 protocol_version: 0
-revision: v0.6.0
+revision: v0.5.0
 status: draft
 order: 4
 ---

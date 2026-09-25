@@ -1,6 +1,6 @@
 {
   "id": "operations/ping-request",
-  "revision": "v0.6.0",
+  "revision": "v0.5.0",
   "protocol_version": 0,
   "clause": "The Liveness Operation",
   "direction": "decode",

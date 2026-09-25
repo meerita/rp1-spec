@@ -1,6 +1,6 @@
 {
   "id": "operations/get-response-empty-value",
-  "revision": "v0.6.0",
+  "revision": "v0.5.0",
   "protocol_version": 0,
   "clause": "GET",
   "direction": "decode",

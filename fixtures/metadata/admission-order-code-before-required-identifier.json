@@ -1,6 +1,6 @@
 {
   "id": "metadata/admission-order-code-before-required-identifier",
-  "revision": "v0.6.0",
+  "revision": "v0.5.0",
   "protocol_version": 0,
   "clause": "Frame Admission Order",
   "direction": "decode",

@@ -2,7 +2,7 @@
 title: Metadata
 description: The metadata region of a frame: where it sits, the entry layout, the order entries appear in, the whole identifier domain, and what a receiver does with an identifier protocol version 0 does not assign.
 protocol_version: 0
-revision: v0.6.0
+revision: v0.5.0
 status: draft
 order: 3
 ---
@@ -17,7 +17,7 @@ domain of the identifier field, and what a receiver does with an entry
 whose identifier this revision does not assign.
 
 It assigns no identifier. Protocol version 0 assigns none at revision
-v0.6.0, and both ranges of the domain are unassigned. What this revision
+v0.5.0, and both ranges of the domain are unassigned. What this revision
 publishes is the region and the rule each range carries, so that a later
 revision assigns an identifier without invalidating a peer built on this
 one.

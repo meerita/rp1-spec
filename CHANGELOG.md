@@ -19,13 +19,13 @@ always produces a new revision.
 Each entry states what changed, whether a peer built against the previous
 revision still conforms, and what such a peer must do when it does not.
 
-## [0.6.0]
+## [0.5.0]
 
 Classification: addition. The revision adds the opcode registry and the
 five ungated operations and changes no requirement revision v0.4.0
 publishes. A peer built against v0.4.0 conforms to v0.4.0 unchanged. That
 revision assigns no operation, so such a peer does not run a request until
-it implements the operations this revision adds; against a v0.6.0 request
+it implements the operations this revision adds; against a v0.5.0 request
 it answers the unsupported operation class for that request and keeps the
 connection open.
 
@@ -83,7 +83,7 @@ serve.
   value-held-outside-memory code states the length of.
 - Extension and Version Policy, Correlation and Behavior for Unknown Input
   state the assignments and the rows this revision adds.
-- Every document and every fixture states revision v0.6.0. The corpus of
+- Every document and every fixture states revision v0.5.0. The corpus of
   revision v0.4.0 is preserved at the tag that published it.
 
 ### Added fixtures

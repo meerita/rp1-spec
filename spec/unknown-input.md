@@ -36,11 +36,11 @@ Admission Order, so a reader meets them in the order a receiver runs
 them. A receiver stops at the first step that decides, so a frame that
 matches more than one row produces the outcome of the row it meets first.
 
-Three rows carry `none` in the class column and the scope column, and
-none of the three is a failure. At steps 1 and 7 the receiver does not
-hold a frame yet and reads more bytes. An entry carrying an unassigned
-optional metadata identifier is one the receiver skips. Every other row
-names one class and one scope.
+Several rows carry `none` in the class column and the scope column, and
+none of them is a failure. At steps 1 and 7 the receiver does not hold a
+frame yet and reads more bytes. An entry the receiver skips, and a
+withdrawal naming a request id the receiver does not hold, are rows the
+receiver passes over. Every other row names one class and one scope.
 
 A row's scope states what the outcome costs. Reporting a connection-fatal
 failure states how each peer reports a row whose scope is
@@ -68,12 +68,18 @@ implementation produces that row's outcome.
 | 10 | `request id` is 0 on a frame that names a request | protocol violation | connection-fatal | The Reserved Request Id | `correlation/request-frame-with-the-reserved-id`, `correlation/response-frame-with-the-reserved-id`, `correlation/error-frame-with-the-reserved-id-and-a-request-scoped-class` |
 | 11 | a frame opens a request whose `request id` is already in flight at the receiver | protocol violation | connection-fatal | A request id already in flight | `correlation/duplicate-in-flight-id` |
 | 12 | a frame names a request that is not in flight at the receiver | protocol violation | connection-fatal | A request id not in flight | `correlation/response-naming-an-id-not-in-flight`, `correlation/second-terminal-frame-for-a-retired-id` |
+| 12 | a withdrawal names a request id the receiver does not hold | none, the receiver produces no frame | none | Withdrawal | `correlation/withdrawal-naming-an-id-not-in-flight`, `correlation/repeated-withdrawal` |
 | 13 | `code` on a REQUEST frame carries an opcode this revision does not assign | unsupported operation | request-scoped | Opcodes | `operations/unassigned-opcode-refused`, `operations/opcode-zero-refused`, `operations/opcode-at-the-maximum-refused`, `operations/unassigned-opcode-with-a-payload-refused`, `correlation/request-frame-reusing-a-retired-id` |
 | 13 | `code` on a RESPONSE frame carries a result code this revision does not assign | protocol violation | connection-fatal | Result Codes | `results/unassigned-result-code-refused`, `results/unassigned-result-code-at-the-maximum-refused` |
 | 13 | `code` on an ERROR frame carries an error class this revision does not assign | protocol violation | connection-fatal | The Error Class Registry | `errors/unassigned-error-class-refused`, `errors/error-class-zero-refused`, `errors/unassigned-error-class-at-the-maximum-refused` |
+| 13 | `code` on a WITHDRAWAL frame carries a non-zero value | protocol violation | connection-fatal | The Control Code on a Kind That Assigns None | `header/withdrawal-frame-with-a-nonzero-code-refused` |
 | 14 | the entries of the metadata region are not strictly ascending | invalid argument | request-scoped | Entry Order | `metadata/entries-out-of-order`, `metadata/duplicate-identifier` |
 | 15 | an entry carries an identifier in `0x8000..0xFFFF` that this revision does not assign | invalid argument | request-scoped | The Required Range | `metadata/unassigned-required-identifier-refused` |
 | none | an entry carries an identifier in `0x0000..0x7FFF` that this revision does not assign | none, the receiver skips the entry | none | The Optional Range | `metadata/unassigned-optional-identifier-skipped` |
+| none | an entry carries identifier `0x0001` whose value length is not four bytes | none, the receiver skips the entry | none | The Assigned Identifiers | `metadata/deadline-with-a-wrong-length-value-skipped` |
+| none | an entry carries identifier `0x0002` with a value in `0x04..0xFF` | none, the receiver skips the entry | none | The Request Class Entry | `metadata/request-class-value-not-assigned-skipped` |
+| none | a deadline entry arrives on a connection whose accepted set does not name deadlines | none, the receiver skips the entry | none | Deadlines | `metadata/deadline-without-the-capability-skipped` |
+| none | a request class entry arrives on a connection whose accepted set does not name request classes | none, the receiver skips the entry | none | Request Classes | `metadata/request-class-without-the-capability-skipped` |
 
 The last row is not a step of the order. A receiver that skips an entry
 has not stopped at it: it resumes at the next entry and continues to
@@ -107,6 +113,8 @@ Checks that follow the order places them after step 15.
 | a REQUEST frame carrying the `SET` opcode whose `key length` exceeds the bytes that follow it | malformed request | connection-fatal | The key and the value | `operations/declared-key-length-overruns-the-payload` |
 | a RESPONSE frame carrying the absent result code whose `payload length` is not zero | malformed request | connection-fatal | Absent | `results/absent-with-a-payload-refused` |
 | a RESPONSE frame carrying the value held outside memory result code whose `payload length` is not eight | malformed request | connection-fatal | Value held outside memory | `results/value-held-outside-memory-with-a-short-payload-refused` |
+| a WITHDRAWAL frame whose payload is not empty | malformed request | connection-fatal | Withdrawal | `header/withdrawal-frame-with-a-payload-refused` |
+| a WITHDRAWAL frame whose metadata region is not empty | malformed request | connection-fatal | Withdrawal | `header/withdrawal-frame-with-a-metadata-region-refused` |
 
 A frame refused by one of these rows was admitted by the order, and a
 frame refused by the order reaches none of them. The order decides first
@@ -117,7 +125,9 @@ payload, and Validating a handshake payload, in Handshake, states the
 checks over it. A REQUEST frame carrying one of the five ungated operation
 opcodes carries the request payload Operations defines for it, and that
 document states the checks over it. A REQUEST frame carrying any other
-opcode is refused at step 13 whatever its payload carries.
+opcode is refused at step 13 whatever its payload carries. A WITHDRAWAL
+frame carries no payload and no metadata region, and Withdrawal states the
+check over it.
 
 ## Inputs the Connection State and the Handshake Decide
 
@@ -140,6 +150,9 @@ handshake frame. Each names the class and the scope its section states.
 | a negotiated maximum metadata size below 4096 | malformed request | connection-fatal | Negotiated maximum metadata size | `handshake/negotiated-metadata-below-the-floor` |
 | a capability entry carrying an unassigned identifier | none, the receiver ignores it | none | An Unassigned Identifier | `handshake/unassigned-capability-id-ignored`, `handshake/capability-entry-with-a-value-ignored` |
 | an accepted capability the offerer did not offer | protocol violation | connection-fatal | Offering and Acceptance | `handshake/acceptance-names-unoffered-capability` |
+| a WITHDRAWAL frame on a connection whose accepted set does not name cancellation | protocol violation | connection-fatal | Cancellation | `capabilities/withdrawal-without-cancellation-refused` |
+| an ERROR frame carrying deadline exceeded on a connection whose accepted set does not name deadlines | protocol violation | connection-fatal | Deadline exceeded | `capabilities/deadline-exceeded-without-the-capability-refused` |
+| an ERROR frame carrying cancelled on a connection whose accepted set does not name cancellation | protocol violation | connection-fatal | Cancelled | `capabilities/cancelled-without-the-capability-refused` |
 
 The row for an unassigned identifier and the row for a wrong-length value
 are the two that are not failures. A receiver that meets either resumes at

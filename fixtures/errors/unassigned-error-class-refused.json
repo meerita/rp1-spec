@@ -1,6 +1,6 @@
 {
   "id": "errors/unassigned-error-class-refused",
-  "revision": "v0.2.0",
+  "revision": "v0.3.0",
   "protocol_version": 0,
   "clause": "The Error Class Registry",
   "direction": "decode",

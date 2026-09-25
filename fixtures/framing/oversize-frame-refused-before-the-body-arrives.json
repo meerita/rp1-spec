@@ -1,6 +1,6 @@
 {
   "id": "framing/oversize-frame-refused-before-the-body-arrives",
-  "revision": "v0.2.0",
+  "revision": "v0.3.0",
   "protocol_version": 0,
   "clause": "Frame Admission Order",
   "direction": "decode",

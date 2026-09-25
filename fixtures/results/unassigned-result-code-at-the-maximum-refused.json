@@ -1,6 +1,6 @@
 {
   "id": "results/unassigned-result-code-at-the-maximum-refused",
-  "revision": "v0.2.0",
+  "revision": "v0.3.0",
   "protocol_version": 0,
   "clause": "Result Codes",
   "direction": "decode",

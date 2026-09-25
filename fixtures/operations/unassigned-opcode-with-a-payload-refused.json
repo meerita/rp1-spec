@@ -1,6 +1,6 @@
 {
   "id": "operations/unassigned-opcode-with-a-payload-refused",
-  "revision": "v0.2.0",
+  "revision": "v0.3.0",
   "protocol_version": 0,
   "clause": "The REQUEST frame payload",
   "direction": "decode",

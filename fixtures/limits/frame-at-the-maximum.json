@@ -1,8 +1,8 @@
 {
   "id": "limits/frame-at-the-maximum",
-  "revision": "v0.2.0",
+  "revision": "v0.3.0",
   "protocol_version": 0,
-  "clause": "Frame Size Limits",
+  "clause": "The pre-negotiation maximum frame size",
   "direction": "decode",
   "provenance": "derived-from-specification",
   "input": {

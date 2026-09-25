@@ -2,7 +2,7 @@
 title: Failures
 description: The error classes protocol version 0 assigns, the scope and completion certainty of each, the ERROR frame payload, and the rule for an unassigned class.
 protocol_version: 0
-revision: v0.4.0
+revision: v0.5.0
 status: draft
 order: 9
 ---
@@ -233,7 +233,9 @@ scope   request-scoped
 
 The receiver could not admit the resources the request needs.
 
-This revision defines no surface that produces this class.
+This revision's write operations can produce this class: a responder that
+cannot admit the memory a write needs answers it for that request and
+stores nothing.
 
 A mutation: nothing was written.
 
@@ -283,7 +285,10 @@ scope   request-scoped
 The request names a key that is not held in a representation the operation
 acts on.
 
-This revision defines no surface that produces this class.
+This revision's `SET` operation can produce this class: a byte write
+against a key held in another representation answers it and stores nothing.
+`DEL` never answers it, and `EXISTS` answers presence whatever
+representation a key holds.
 
 A mutation: nothing was written.
 

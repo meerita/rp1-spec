@@ -1,8 +1,8 @@
 ---
 title: Extension and Version Policy
-description: The property that decides whether a change invalidates a peer built on an earlier revision, the treatment every kind of change carries, the growth treatment of every value space protocol version 0 defines at revision v0.4.0, and the fixture that proves each receiver rule those treatments follow from.
+description: The property that decides whether a change invalidates a peer built on an earlier revision, the treatment every kind of change carries, the growth treatment of every value space protocol version 0 defines at revision v0.5.0, and the fixture that proves each receiver rule those treatments follow from.
 protocol_version: 0
-revision: v0.4.0
+revision: v0.5.0
 status: draft
 order: 11
 ---
@@ -163,8 +163,8 @@ kind row decides what that assignment takes.
 
 Three spaces grow without a capability and without a new protocol version.
 This revision assigns no value in the two metadata spaces and assigns only
-the handshake in the opcode space, so every other value of each space is
-available to a later revision.
+the handshake and the five ungated operations in the opcode space, so every
+other value of each space is available to a later revision.
 
 The opcode space grows at the cost of one refused request. Assigning an
 Opcode Later states it: a peer built on this revision answers an opcode it
@@ -208,7 +208,7 @@ rule closes the connection costs
 a later revision a capability, and costs every peer built before that
 capability the answer it would have received. This revision therefore
 assigns where deferring is expensive and defers where assigning is cheap,
-which is why it assigns one opcode, the handshake, and no metadata
+which is why it assigns the six ungated opcodes and no metadata
 identifier, and assigns in both code spaces.
 
 ## The Fixtures That Prove the Rules

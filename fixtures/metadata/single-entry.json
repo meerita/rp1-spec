@@ -1,6 +1,6 @@
 {
   "id": "metadata/single-entry",
-  "revision": "v0.4.0",
+  "revision": "v0.5.0",
   "protocol_version": 0,
   "clause": "The Entry Layout",
   "direction": "decode",

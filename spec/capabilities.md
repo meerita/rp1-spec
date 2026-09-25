@@ -2,7 +2,7 @@
 title: Capabilities
 description: The capability identifier domain of protocol version 0, the entry layout the handshake carries, the receiver rule for an unassigned identifier or a value of the wrong length, the offer and acceptance rules, and the dependencies a capability may declare.
 protocol_version: 0
-revision: v0.4.0
+revision: v0.5.0
 status: draft
 order: 6
 ---
@@ -33,7 +33,7 @@ A capability identifier is a `u16`. The whole domain is covered here:
 |---|---|
 | `0x0000..0xFFFF` | unassigned |
 
-Protocol version 0 assigns no capability identifier at revision v0.4.0. No
+Protocol version 0 assigns no capability identifier at revision v0.5.0. No
 value is reserved as never valid and none is reserved for a later
 assignment in particular.
 

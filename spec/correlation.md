@@ -2,7 +2,7 @@
 title: Correlation
 description: Request identity: the field that names a request, the peer that allocates it, its reserved value, the state each peer holds for it, the frame that retires a request, and what a receiver does with a frame it cannot correlate.
 protocol_version: 0
-revision: v0.4.0
+revision: v0.5.0
 status: draft
 order: 4
 ---
@@ -25,10 +25,10 @@ and 12. Each is stated once, over every frame kind, rather than once per
 kind.
 
 Handshake defines the exchange that opens a connection. This revision
-assigns the handshake opcode and no other, so no request it describes
-names work a server performs beyond the handshake. What This Revision
-Reaches states which of the rules below a conforming peer meets at this
-revision.
+assigns the handshake opcode and the five ungated operations, so the
+requests it describes name the work those operations perform. What This
+Revision Reaches states which of the rules below a conforming peer meets at
+this revision.
 
 It defines no bound on the number of requests in flight at a peer. Limits
 states the size bounds this revision fixes, and none of them counts
@@ -286,11 +286,11 @@ request that received no class received no statement. An initiator that
 must know re-reads what the request would have changed, on a new
 connection.
 
-This revision assigns the handshake opcode and no other, so the only
-request it defines is the handshake. The rule is stated here because it is
-a property of the correlation mechanism and not of any operation. It holds
-for every operation a later revision assigns, and an initiator built on
-this revision that concluded otherwise would be wrong from the first one.
+This revision assigns the handshake opcode and the five ungated operations.
+The rule is stated here because it is a property of the correlation
+mechanism and not of any operation. It holds for every operation a later
+revision assigns, and an initiator built on this revision that concluded
+otherwise would be wrong from the first one.
 
 ## What This Revision Reaches
 
@@ -300,10 +300,10 @@ state, and that a REQUEST frame carrying any other opcode in that state is
 a protocol violation.
 
 Frame Admission Order places the `code` check at step 13. In the
-negotiated state, this revision assigns no opcode other than the handshake,
-so a server answers a REQUEST frame carrying any other opcode with the
-unsupported operation error class for that request and keeps the connection
-open. That ERROR frame is the request's terminal frame.
+negotiated state, a server answers a REQUEST frame carrying an opcode this
+revision does not assign with the unsupported operation error class for
+that request and keeps the connection open. That ERROR frame is the
+request's terminal frame.
 
 At this revision, therefore:
 
@@ -316,10 +316,12 @@ a request enters flight at a server when the server has carried the
   flight when the server has written the terminal frame that retires it
 the handshake request is answered by a RESPONSE frame carrying the
   success result code, or by an ERROR frame when the handshake fails
-a REQUEST frame carrying any other opcode in the negotiated state is
+each of the five ungated operations is answered by a RESPONSE frame
+  carrying a result code, or by an ERROR frame
+a REQUEST frame carrying an opcode this revision does not assign is
   answered by an ERROR frame carrying the unsupported operation class
-no conforming server sends a RESPONSE frame for any other opcode,
-  because this revision assigns no operation that could succeed
+no conforming server sends a RESPONSE frame for an opcode this revision
+  does not assign
 ```
 
 A client implements the rules above for a RESPONSE frame whether or not a

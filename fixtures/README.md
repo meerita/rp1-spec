@@ -1,8 +1,8 @@
 ---
 title: Fixture Corpus (Non-Normative)
-description: The form of the fixture corpus published with revision v0.4.0 of protocol version 0.
+description: The form of the fixture corpus published with revision v0.5.0 of protocol version 0.
 protocol_version: 0
-revision: v0.4.0
+revision: v0.5.0
 normative: false
 ---
 
@@ -93,7 +93,7 @@ Every fixture is a JSON object carrying all eight fields:
 | Field | Type | Meaning |
 |---|---|---|
 | `id` | string | the stable identifier, matching the file path |
-| `revision` | string | the specification revision the fixture represents, `v0.4.0` in this corpus |
+| `revision` | string | the specification revision the fixture represents, `v0.5.0` in this corpus |
 | `protocol_version` | number | the protocol version the fixture represents, `0` in this corpus |
 | `clause` | string | the title of the section that binds the rule the fixture exercises |
 | `direction` | string | `decode`, `encode`, or `both` |
@@ -286,7 +286,7 @@ real fixture carries.
 
 {
   "id": "<the identifier, matching the file path>",
-  "revision": "v0.4.0",
+  "revision": "v0.5.0",
   "protocol_version": 0,
   "clause": "<the title of the section that binds the rule>",
   "direction": "decode",
@@ -309,7 +309,7 @@ offers. This is `header/minimum-legal-frame`, in full:
 ```json
 {
   "id": "header/minimum-legal-frame",
-  "revision": "v0.4.0",
+  "revision": "v0.5.0",
   "protocol_version": 0,
   "clause": "Frame Header",
   "direction": "both",

@@ -1,8 +1,8 @@
 ---
 title: Behavior for Unknown Input
-description: Every input protocol version 0 permits a peer to receive at revision v0.4.0, in the order a receiver meets them, with the error class and the failure scope each one produces, the section that binds that outcome, and the fixtures that prove it.
+description: Every input protocol version 0 permits a peer to receive at revision v0.5.0, in the order a receiver meets them, with the error class and the failure scope each one produces, the section that binds that outcome, and the fixtures that prove it.
 protocol_version: 0
-revision: v0.4.0
+revision: v0.5.0
 status: draft
 order: 12
 ---
@@ -102,6 +102,9 @@ Checks that follow the order places them after step 15.
 |---|---|---|---|---|
 | an ERROR frame whose payload is shorter than two bytes | malformed request | connection-fatal | The ERROR Frame Payload | `errors/payload-shorter-than-the-detail-length-field` |
 | an ERROR frame whose `detail length` exceeds the bytes that follow it | malformed request | connection-fatal | The ERROR Frame Payload | `errors/detail-length-exceeds-the-payload` |
+| a REQUEST frame carrying the `PING` opcode whose payload is not empty | malformed request | connection-fatal | Argument Validation | `operations/ping-payload-refused` |
+| a REQUEST frame carrying the `SET` opcode whose payload is shorter than four bytes | malformed request | connection-fatal | The key and the value | `operations/payload-shorter-than-its-head` |
+| a REQUEST frame carrying the `SET` opcode whose `key length` exceeds the bytes that follow it | malformed request | connection-fatal | The key and the value | `operations/declared-key-length-overruns-the-payload` |
 | a RESPONSE frame carrying the absent result code whose `payload length` is not zero | malformed request | connection-fatal | Absent | `results/absent-with-a-payload-refused` |
 | a RESPONSE frame carrying the value held outside memory result code whose `payload length` is not eight | malformed request | connection-fatal | Value held outside memory | `results/value-held-outside-memory-with-a-short-payload-refused` |
 
@@ -111,8 +114,10 @@ in every case.
 
 A REQUEST frame carrying the handshake opcode carries the handshake request
 payload, and Validating a handshake payload, in Handshake, states the
-checks over it. This revision defines no payload for a REQUEST frame
-carrying any other opcode, so it states no check over one.
+checks over it. A REQUEST frame carrying one of the five ungated operation
+opcodes carries the request payload Operations defines for it, and that
+document states the checks over it. A REQUEST frame carrying any other
+opcode is refused at step 13 whatever its payload carries.
 
 ## Inputs the Connection State and the Handshake Decide
 

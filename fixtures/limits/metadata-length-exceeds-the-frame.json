@@ -1,6 +1,6 @@
 {
   "id": "limits/metadata-length-exceeds-the-frame",
-  "revision": "v0.4.0",
+  "revision": "v0.5.0",
   "protocol_version": 0,
   "clause": "The pre-negotiation maximum frame size",
   "direction": "decode",

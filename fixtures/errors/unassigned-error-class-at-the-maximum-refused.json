@@ -1,6 +1,6 @@
 {
   "id": "errors/unassigned-error-class-at-the-maximum-refused",
-  "revision": "v0.4.0",
+  "revision": "v0.5.0",
   "protocol_version": 0,
   "clause": "The Error Class Registry",
   "direction": "decode",

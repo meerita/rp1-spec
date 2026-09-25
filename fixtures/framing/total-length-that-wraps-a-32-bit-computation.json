@@ -1,6 +1,6 @@
 {
   "id": "framing/total-length-that-wraps-a-32-bit-computation",
-  "revision": "v0.4.0",
+  "revision": "v0.5.0",
   "protocol_version": 0,
   "clause": "Frame Length Arithmetic",
   "direction": "decode",

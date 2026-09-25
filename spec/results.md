@@ -2,7 +2,7 @@
 title: Results
 description: Where a result code appears in a frame, the whole domain of the result code space, the result codes protocol version 0 assigns and the payload of each, what a receiver does with a result code it does not assign, and what a later revision does when it assigns one.
 protocol_version: 0
-revision: v0.4.0
+revision: v0.5.0
 status: draft
 order: 8
 ---
@@ -24,8 +24,9 @@ The Error Class Registry states that taxonomy separately. Both are read
 from the same field, so a caller tells the two apart by the kind of the
 frame that carried it.
 
-It defines no operation payload. Handshake defines the payload the success
-result code carries for the handshake response. For every other operation
+It defines no operation payload of its own. Handshake defines the payload
+the success result code carries for the handshake response, and Operations
+defines it for each of the five ungated operations. For any other operation
 the success payload is defined by the revision that assigns the operation.
 
 ## Result Codes
@@ -82,9 +83,10 @@ The operation ran and produced its answer.
 
 The payload: the operation the request named defines it in full, including
 whether it may be zero bytes. Handshake defines the payload for the
-handshake response. This revision assigns no other operation, so for every
-other request the revision that assigns the operation defines the success
-payload, and this document states no length a receiver checks for it.
+handshake response, and Operations defines it for each of the five ungated
+operations. For any other request the revision that assigns the operation
+defines the success payload, and this document states no length a receiver
+checks for it.
 Within the bound Negotiated maximum frame size states, every value of `payload length`
 is a legal encoding of a RESPONSE frame carrying this code at this
 revision.
@@ -140,8 +142,8 @@ frame as a malformed request and close the connection.
 
 This is an outcome and not a failure. The key exists, the responder states
 how large its value is, and it carried none of it. A caller that needs the
-value asks for it through an operation that carries one, and this revision
-assigns no operation.
+value reads it through `GET`, which Operations assigns; a caller that needs
+only the size has it here.
 
 ## Assigning a Result Code Later
 

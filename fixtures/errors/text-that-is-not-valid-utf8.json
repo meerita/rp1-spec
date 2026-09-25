@@ -1,6 +1,6 @@
 {
   "id": "errors/text-that-is-not-valid-utf8",
-  "revision": "v0.4.0",
+  "revision": "v0.5.0",
   "protocol_version": 0,
   "clause": "The ERROR Frame Payload",
   "direction": "decode",

@@ -107,6 +107,10 @@ A peer MUST NOT send a frame whose total length exceeds the negotiated
 maximum frame size. A receiver that meets one MUST treat the frame as a
 resource limit failure and close the connection.
 
+A value below 65536 is outside what a responder may state. An offerer that
+reads a `negotiated maximum frame size` below 65536 MUST treat the response
+as a malformed handshake and close the connection.
+
 ### Negotiated maximum metadata size
 
 ```text
@@ -124,6 +128,9 @@ pre-negotiation bound cannot then require the connection to use less.
 A peer MUST NOT send a frame whose `metadata length` exceeds the negotiated
 value. A receiver that meets one MUST treat the frame as a malformed
 request and close the connection.
+
+An offerer that reads a `negotiated maximum metadata size` below 4096 MUST
+treat the response as a malformed handshake and close the connection.
 
 ### Where the negotiated checks run
 

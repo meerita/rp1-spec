@@ -107,6 +107,10 @@ to the maximum, inclusive, is a version the offerer accepts. A range whose
 maximum is below its minimum is a malformed request, and a receiver that
 meets one MUST close the connection.
 
+An offerer that proposes a version it does not support accepts a connection
+that may become unusable at its first frame, and no peer can detect from
+the wire that the proposal was false.
+
 The offerer proposes a desired maximum frame size. It must be prepared to
 receive a frame of the negotiated size, which Limits derives.
 
@@ -170,13 +174,17 @@ Handshake states.
 ## Version Negotiation
 
 The offerer proposes a version range in the handshake request. The
-responder MUST select the highest protocol version it supports that lies
-within that range, and MUST state it in `negotiated protocol version`. A
-responder MUST NOT state a version outside the range the offerer proposed.
+responder MUST select a protocol version that lies within that range and
+that the responder supports, and MUST state it in `negotiated protocol
+version`. The responder SHOULD select the highest version it supports that
+lies within the range, so that the connection runs on the newest version
+both peers can use; a responder that selects a lower version it supports
+still interoperates, because the offerer accepts every value in the range
+it proposed.
 
 The offerer MUST accept any value the responder states inside the range it
-proposed, because Before the Handshake requires the offerer to propose a
-range it supports in full.
+proposed. An offerer that receives a version outside the range it proposed
+MUST treat the response as a malformed handshake and close the connection.
 
 A responder that supports no version in the offered range answers the
 unsupported protocol version error class and closes the connection. Every

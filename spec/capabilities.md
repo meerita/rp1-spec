@@ -80,6 +80,12 @@ having accepted a capability, or an implementation of it, is not the same
 as the connection having it: only an entry in the accepted set makes a
 gated behavior legal.
 
+A receiver that meets a frame a capability gates on a connection whose
+accepted set does not name that capability MUST treat the frame as a
+protocol violation and close the connection. This revision assigns no
+capability, so no frame is gated and the rule binds the revisions that
+assign one.
+
 ## Dependencies
 
 A capability may declare that it depends on another. A responder MUST

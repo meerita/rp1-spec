@@ -1,6 +1,6 @@
 {
   "id": "errors/detail-length-zero-with-text",
-  "revision": "v0.3.0",
+  "revision": "v0.4.0",
   "protocol_version": 0,
   "clause": "The ERROR Frame Payload",
   "direction": "decode",

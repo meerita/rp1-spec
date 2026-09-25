@@ -1,12 +1,12 @@
 {
   "id": "operations/unassigned-opcode-with-a-payload-refused",
-  "revision": "v0.3.0",
+  "revision": "v0.4.0",
   "protocol_version": 0,
   "clause": "The REQUEST frame payload",
   "direction": "decode",
   "provenance": "derived-from-specification",
   "input": {
-    "bytes": "00010000010000000400000001000000000000000a0b0c0d",
+    "bytes": "00010000020000000400000001000000000000000a0b0c0d",
     "role": "server"
   },
   "expect": {

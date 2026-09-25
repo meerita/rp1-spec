@@ -1,6 +1,6 @@
 {
   "id": "handshake/capability-entry-with-a-value-ignored",
-  "revision": "v0.3.0",
+  "revision": "v0.4.0",
   "protocol_version": 0,
   "clause": "An Unassigned Identifier",
   "direction": "decode",

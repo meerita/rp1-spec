@@ -2,7 +2,7 @@
 title: Results
 description: Where a result code appears in a frame, the whole domain of the result code space, the result codes protocol version 0 assigns and the payload of each, what a receiver does with a result code it does not assign, and what a later revision does when it assigns one.
 protocol_version: 0
-revision: v0.3.0
+revision: v0.4.0
 status: draft
 order: 8
 ---

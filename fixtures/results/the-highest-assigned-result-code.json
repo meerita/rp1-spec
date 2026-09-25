@@ -1,6 +1,6 @@
 {
   "id": "results/the-highest-assigned-result-code",
-  "revision": "v0.3.0",
+  "revision": "v0.4.0",
   "protocol_version": 0,
   "clause": "Value held outside memory",
   "direction": "both",

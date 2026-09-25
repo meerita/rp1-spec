@@ -1,6 +1,6 @@
 {
   "id": "errors/the-highest-assigned-error-class",
-  "revision": "v0.3.0",
+  "revision": "v0.4.0",
   "protocol_version": 0,
   "clause": "Wrong type",
   "direction": "both",

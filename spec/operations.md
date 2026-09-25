@@ -217,6 +217,58 @@ that representation.
 An `EXISTS` request reaches the success and absent result codes and no
 other result code.
 
+## The Write and Delete Operations
+
+`SET` writes one key and `DEL` removes one key. Both are mutations, and a
+caller of either learns from the answer whether the mutation took effect.
+
+### SET
+
+`SET` is opcode `0x0004`. Its request payload is the `u32` key length, the
+key, and the value, in the encoding The REQUEST frame payload states. A
+`SET` whose key length is zero writes the empty key, and a `SET` whose key
+length leaves no byte reads as a value of zero bytes.
+
+A responder answers a `SET` request with the success result code and an
+empty payload. A `SET` request reaches the success result code and no other
+result code.
+
+A `SET` request can answer a failure class instead. The classes a `SET`
+request can answer are malformed request, unsupported operation, resource
+limit, protocol violation, invalid argument, overloaded, wrong type and
+internal error. The class states whether the mutation may have taken
+effect, and Failures states that fact for every assigned class: every class
+above states that nothing was written, except `internal error`, which
+states that the mutation may have taken effect. A caller that must know
+whether a `SET` that answered an `internal error` took effect MUST re-read
+the key.
+
+A `SET` against a key that holds a representation other than a byte value
+answers the wrong type class and stores nothing. A `SET` that answers any
+other failure class stores nothing.
+
+### DEL
+
+`DEL` is opcode `0x0005`. Its request payload is the key, in the same
+encoding as `GET` and `EXISTS`.
+
+A responder answers a `DEL` request with the success result code and an
+empty payload when it removed a key, and with the absent result code and an
+empty payload when the key did not exist. Removing a key that does not
+exist is a result and not a failure, and a responder MUST NOT answer an
+error class for it.
+
+A `DEL` removes whichever representation the key holds, so a `DEL` request
+never answers the wrong type class. The classes a `DEL` request can answer
+are malformed request, unsupported operation, resource limit, protocol
+violation, invalid argument, overloaded and internal error. Every one
+states that nothing was written, except `internal error`, which states that
+the mutation may have taken effect; a caller that must know MUST re-read
+the key.
+
+A `DEL` request reaches the success and absent result codes and no other
+result code.
+
 ## Assigning an Opcode Later
 
 A later revision assigns an opcode as an addition. It needs neither a

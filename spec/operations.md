@@ -2,7 +2,7 @@
 title: Operations
 description: Where an opcode appears in a frame, the whole domain of the opcode space, the opcodes protocol version 0 assigns at this revision, the request and response payload of each operation, the argument encoding they share, the validation each runs, what a receiver does with an opcode this revision does not assign, and what a later revision does when it assigns one.
 protocol_version: 0
-revision: v0.5.1
+revision: v0.6.0
 status: draft
 order: 7
 ---
@@ -23,9 +23,10 @@ It assigns six opcodes: the handshake, and the five ungated operations
 peer that offers and negotiates no capability. Handshake owns the handshake
 request payload and the rule for when the handshake request is legal.
 
-It defines no capability-gated operation, and this revision assigns no
-capability. It does not define the result code a response carries, which
-Results owns, nor the failure a request produces, which Failures owns.
+It defines no capability-gated operation. Capabilities assigns three
+capability identifiers, and none of them gates an operation. It does not
+define the result code a response carries, which Results owns, nor the
+failure a request produces, which Failures owns.
 
 An engineer implementing this document alone can run the five ungated
 operations, encode each request, decode each response, and attribute each
@@ -184,9 +185,9 @@ zero-byte payload as an absent key.
 The value-held-outside-memory result code is not a failure and not an
 answer that carries the value: the key exists and the responder states the
 logical length of its value without carrying a byte of it. A `GET` request
-reaches this code because this revision assigns no capability, and a
-connection that negotiated nothing is a connection the responder can send
-no value fragment to.
+reaches this code because this revision defines no value-fragment surface
+and no capability that carries one, so a responder either sends the whole
+value or sends this code.
 
 A `GET` request reaches the success, absent and value-held-outside-memory
 result codes and no other result code.
@@ -300,8 +301,8 @@ key the responder refuses by size after it read it is an invalid argument,
 request-scoped, which Limits states.
 
 No rejection above uses a capability, and no operation is refused on the
-ground that a capability was not negotiated, because this revision assigns
-no capability.
+ground that a capability was not negotiated, because no capability this
+revision assigns gates an operation.
 
 ## Assigning an Opcode Later
 

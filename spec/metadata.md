@@ -2,7 +2,7 @@
 title: Metadata
 description: The metadata region of a frame: where it sits, the entry layout, the order entries appear in, the whole identifier domain, and what a receiver does with an identifier protocol version 0 does not assign.
 protocol_version: 0
-revision: v0.5.1
+revision: v0.6.0
 status: draft
 order: 3
 ---
@@ -16,11 +16,11 @@ long it is, the layout of an entry, the order entries appear in, the whole
 domain of the identifier field, and what a receiver does with an entry
 whose identifier this revision does not assign.
 
-It assigns no identifier. Protocol version 0 assigns none at revision
-v0.5.1, and both ranges of the domain are unassigned. What this revision
-publishes is the region and the rule each range carries, so that a later
-revision assigns an identifier without invalidating a peer built on this
-one.
+This revision assigns identifiers `0x0001`, the deadline, and `0x0002`,
+the request class, in the optional range. Both ranges carry the rule each
+one states for an identifier this revision does not assign, so a later
+revision assigns a further identifier without invalidating a peer built on
+this one.
 
 It does not define the bound on the region's length. Limits states that
 bound, the bytes it counts, and what a receiver does with a frame that
@@ -78,8 +78,8 @@ not the same as an absent entry: the entry is present, its identifier is
 present, and a receiver acts on it by its identifier.
 
 The value bytes are opaque. A receiver that does not recognise an entry's
-identifier interprets none of them, and this revision assigns no
-identifier, so it defines no meaning for the bytes of any entry.
+identifier interprets none of them. The Assigned Identifiers states the
+meaning this revision gives to the value bytes of each entry it assigns.
 
 ## Region Fill
 
@@ -146,20 +146,86 @@ A receiver computes the class from the identifier alone: the entry is
 required when `identifier & 0x8000` is non-zero and optional otherwise. It
 reads no other field of the entry and holds no state to decide.
 
-This revision assigns no identifier in either range. A peer MUST NOT send
-an entry whose identifier this revision does not assign, so a peer
-implementing this revision alone sends a `metadata length` of zero on
-every frame and carries no entry at all.
+This revision assigns identifiers `0x0001`, the deadline, and `0x0002`,
+the request class, in the optional range. The Assigned Identifiers states
+their encoding and the meaning of their values.
 
-The two rules below are therefore the whole of what a receiver does with a
-region's contents at this revision. They are stated because a peer
-implementing a later revision has entries to send, and a receiver built on
-this revision meets them.
+A peer MUST NOT send an entry whose identifier this revision does not
+assign. A receiver that meets one applies the rule of the range the
+identifier lies in: The Optional Range for an optional identifier, and The
+Required Range for a required one.
+
+The two rules below are the whole of what a receiver does with a region
+whose entries this revision does not assign. A peer implementing a later
+revision has entries to send, and a receiver built on this revision meets
+them.
 
 `0x0000` is an unassigned optional identifier and carries the optional
 range's rule. No identifier is reserved as never valid: both rules leave
 the connection usable, so no value in this domain needs a rule that ends
 it.
+
+### The Assigned Identifiers
+
+| Identifier | Range | Entry | Value | Gated by |
+|---|---|---|---|---|
+| `0x0001` | optional | the deadline | four bytes, a little-endian `u32` count of microseconds | the deadlines capability |
+| `0x0002` | optional | the request class | one byte, one of four assigned values | the request classes capability |
+
+An entry carrying identifier `0x0001` is a deadline. The entry is optional:
+a receiver that does not read it serves the frame without it. Request
+Lifetime states what the value means, the instant the duration runs from,
+and what a responder does with it.
+
+The entry's value is exactly four bytes. A receiver that meets an entry
+carrying identifier `0x0001` whose value length is not four bytes MUST
+treat the entry as one this revision does not read: it skips the entry by
+the rule of The Optional Range, produces no failure, and serves the
+request without a deadline.
+
+Metadata owns the identifier and the encoding. Request Lifetime owns the
+meaning of the value and the behavior a deadline produces, and
+Capabilities owns the capability that gates the entry.
+
+### The Request Class Entry
+
+| Value | Class |
+|---|---|
+| `0x00` | latency |
+| `0x01` | normal |
+| `0x02` | bulk |
+| `0x03` | background |
+| `0x04..0xFF` | unassigned |
+
+An entry carrying identifier `0x0002` is a request class: one byte that
+states the initiator's preference for how the responder schedules the
+request. The entry is optional: a receiver that does not read it serves
+the request at its own default.
+
+A request class is a preference and never a guarantee. Server policy wins
+over the client preference. A client MUST NOT depend on a request class to
+obtain a guarantee, because no peer is required to honour it and a
+responder that schedules the request another way is conforming.
+
+Absence of the entry states the normal class. An absent entry is not the
+same as an entry whose value is `0x01`: the two states are not
+interchangeable, and a receiver MUST treat a request carrying no entry as
+the normal class.
+
+The entry's value is exactly one byte. A receiver that meets an entry
+carrying identifier `0x0002` whose value length is not one byte MUST treat
+the entry as one this revision does not read: it skips the entry by the
+rule of The Optional Range, produces no failure, and serves the request at
+the responder's default.
+
+A receiver that meets the entry carrying a value in `0x04..0xFF` MUST skip
+the entry, MUST serve the request at the responder's default, and MUST NOT
+produce a failure. The value is unassigned, and a receiver that produces a
+failure for a preference it does not assign would refuse a request it can
+serve.
+
+Metadata owns the identifier and the encoding. Capabilities owns the
+capability that gates the entry.
 
 ### The Optional Range
 

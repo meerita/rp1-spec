@@ -1,8 +1,8 @@
 ---
 title: Fixture Corpus (Non-Normative)
-description: The form of the fixture corpus published with revision v0.5.1 of protocol version 0.
+description: The form of the fixture corpus published with revision v0.6.0 of protocol version 0.
 protocol_version: 0
-revision: v0.5.1
+revision: v0.6.0
 normative: false
 ---
 
@@ -93,7 +93,7 @@ Every fixture is a JSON object carrying all eight fields:
 | Field | Type | Meaning |
 |---|---|---|
 | `id` | string | the stable identifier, matching the file path |
-| `revision` | string | the specification revision the fixture represents, `v0.5.1` in this corpus |
+| `revision` | string | the specification revision the fixture represents, `v0.6.0` in this corpus |
 | `protocol_version` | number | the protocol version the fixture represents, `0` in this corpus |
 | `clause` | string | the title of the section that binds the rule the fixture exercises |
 | `direction` | string | `decode`, `encode`, or `both` |
@@ -125,6 +125,13 @@ cannot be stated is removed rather than kept.
 | `in_flight` | when the outcome depends on which requests are in flight at the receiver | the request ids in flight at the receiver, as an array, in the order those requests entered flight |
 | `state` | when the outcome depends on the connection state | `pre-negotiation` or `negotiated`, the state the receiver is in; absent means `negotiated` |
 | `limits` | when the outcome depends on a negotiated bound | an object with `maximum_frame_size` and `maximum_metadata_size`, the bounds in force; absent means the pre-negotiation constants, 65536 and 4096 |
+| `capabilities` | when the outcome depends on the accepted capability set | the accepted capability identifiers, as an array, in ascending order; absent means the accepted set is empty |
+
+`capabilities` is present only when the outcome depends on the accepted
+capability set. An absent member means the accepted set is empty, which is
+the accepted set of a connection whose responder accepted no capability. A
+frame kind or an entry a capability gates is refused or skipped by the rule
+for an absent capability.
 
 `state` is present only when the connection state changes the outcome. A
 fixture that states no state asserts its outcome at a receiver in the
@@ -286,7 +293,7 @@ real fixture carries.
 
 {
   "id": "<the identifier, matching the file path>",
-  "revision": "v0.5.1",
+  "revision": "v0.6.0",
   "protocol_version": 0,
   "clause": "<the title of the section that binds the rule>",
   "direction": "decode",
@@ -309,7 +316,7 @@ offers. This is `header/minimum-legal-frame`, in full:
 ```json
 {
   "id": "header/minimum-legal-frame",
-  "revision": "v0.5.1",
+  "revision": "v0.6.0",
   "protocol_version": 0,
   "clause": "Frame Header",
   "direction": "both",
@@ -350,17 +357,16 @@ the field is a `u64`.
 ## Boundaries no frame of this revision reaches
 
 The corpus states the minimum and the maximum legal value of every header
-field that a frame of this revision can carry. Two boundaries are outside
-it, and each one is outside it because the contract forbids the frame that
-would carry it, not because the corpus form cannot state it.
+field that a frame of this revision can carry. One boundary is outside it,
+and it is outside it because the contract forbids the frame that would
+carry it, not because the corpus form cannot state it.
 
 | Boundary | Why no fixture of this corpus states it | What removes it |
 |---|---|---|
-| `code` at `0xFFFF` | the value is unassigned in all three of the spaces the field draws from | the revision that assigns the value at the top of one of those spaces |
-| `metadata length` above zero | protocol version 0 assigns no metadata identifier, so no frame a peer may send carries an entry | the revision that assigns a metadata identifier |
+| `code` at `0xFFFF` | the value is unassigned in all of the spaces the field draws from | the revision that assigns the value at the top of one of those spaces |
 
-Each of the two is covered on the decode side, where a fixture states
-what a receiver does when a peer sends it regardless.
+It is covered on the decode side, where a fixture states what a receiver
+does when a peer sends it regardless.
 
 ## Revision binding
 

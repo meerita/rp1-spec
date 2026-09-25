@@ -2,7 +2,7 @@
 title: Correlation
 description: Request identity: the field that names a request, the peer that allocates it, its reserved value, the state each peer holds for it, the frame that retires a request, and what a receiver does with a frame it cannot correlate.
 protocol_version: 0
-revision: v0.5.1
+revision: v0.6.0
 status: draft
 order: 4
 ---
@@ -82,6 +82,7 @@ Whether a frame names a request follows from its kind:
 | REQUEST | always: the request it opens |
 | RESPONSE | always: the request it answers |
 | ERROR | The request id an ERROR frame carries states when |
+| WITHDRAWAL | always: the request it withdraws |
 
 A peer MUST NOT send a frame that names a request and carries request id
 0. A receiver that meets one MUST treat the frame as a protocol violation
@@ -150,6 +151,7 @@ and no further frame names it.
 | RESPONSE | yes |
 | ERROR carrying a request-scoped error class | yes |
 | ERROR carrying a connection-fatal error class | no |
+| WITHDRAWAL | no |
 
 Failure Scope states that a frame carrying a connection-fatal class
 retires no request and that its sender closes the connection after sending
@@ -160,9 +162,10 @@ A responder MUST send exactly one terminal frame for each request in
 flight at it.
 
 A responder that sends none leaves the request in flight at its initiator
-for as long as the connection lasts. This revision defines no timeout and
-no frame that withdraws a request, so nothing but the connection ending
-retires it.
+for as long as the connection lasts. This revision defines no timeout.
+Request Lifetime defines the withdrawal frame, which stops one request but
+produces no frame of its own, so only the request's terminal frame or the
+connection ending retires it.
 
 A responder that sends a second sends a frame naming a request that is not
 in flight at it. A request id not in flight forbids that frame, and a
@@ -181,9 +184,13 @@ names:
 | REQUEST | opens it |
 | RESPONSE | names a request already in flight |
 | ERROR that names a request | names a request already in flight |
+| WITHDRAWAL | names a request, whether or not it is in flight at the receiver |
 
 A frame carrying request id 0 names no request, so neither check applies
 to it.
+
+The withdrawal row is the one entry that does not require the request to be
+in flight. A request id not in flight states the exception below.
 
 ### A request id already in flight
 
@@ -205,6 +212,12 @@ flight at the receiver MUST treat the frame as a protocol violation and
 close the connection. Frame Admission Order places this check at step 12.
 The rule binds both peers, and a receiver applies it to a frame arriving
 from either direction.
+
+The withdrawal frame is the one exception. A peer MAY send a withdrawal
+for a request id the receiver does not hold, and a receiver MUST NOT treat
+it as a failure. Request Lifetime states the withdrawal's behavior in
+full: a withdrawal naming a request id the receiver does not hold stops
+nothing, produces no frame, and is not an error.
 
 Two conditions produce such a frame, and this contract does not
 distinguish them:

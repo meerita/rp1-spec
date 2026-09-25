@@ -1,6 +1,6 @@
 {
   "id": "handshake/valid-exchange-no-capabilities",
-  "revision": "v0.5.1",
+  "revision": "v0.6.0",
   "protocol_version": 0,
   "clause": "The handshake response payload",
   "direction": "decode",

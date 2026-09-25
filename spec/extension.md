@@ -1,10 +1,10 @@
 ---
 title: Extension and Version Policy
-description: The property that decides whether a change invalidates a peer built on an earlier revision, the treatment every kind of change carries, the growth treatment of every value space protocol version 0 defines at revision v0.5.1, and the fixture that proves each receiver rule those treatments follow from.
+description: The property that decides whether a change invalidates a peer built on an earlier revision, the treatment every kind of change carries, the growth treatment of every value space protocol version 0 defines at revision v0.6.0, and the fixture that proves each receiver rule those treatments follow from.
 protocol_version: 0
-revision: v0.5.1
+revision: v0.6.0
 status: draft
-order: 11
+order: 12
 ---
 
 # Extension and Version Policy
@@ -148,6 +148,11 @@ including the peer it binds and the consequence of violating it.
 | `code` on a REQUEST frame | Opcodes | unsupported operation, request-scoped | an assignment alone |
 | `code` on a RESPONSE frame | Result Codes | protocol violation, connection-fatal | a capability |
 | `code` on an ERROR frame | The Error Class Registry | protocol violation, connection-fatal | a capability |
+| `code` on a WITHDRAWAL frame | The Control Code on a Kind That Assigns None | protocol violation, connection-fatal | a capability |
+| `identifier` `0x0001`, the deadline | The Assigned Identifiers | an entry of another value length is skipped | an assignment alone |
+| `identifier` `0x0002`, the request class | The Request Class Entry | an unassigned value is skipped | an assignment alone |
+| `code` `0x0006`, deadline exceeded | Deadline exceeded | protocol violation, connection-fatal, on a connection without deadlines | a capability |
+| `code` `0x0007`, cancelled | Cancelled | protocol violation, connection-fatal, on a connection without cancellation | a capability |
 | `identifier` in `0x0000..0x7FFF` | The Optional Range | skipped, and no failure | an assignment alone |
 | `identifier` in `0x8000..0xFFFF` | The Required Range | invalid argument, request-scoped | an assignment alone |
 | `request id` 0 | The Reserved Request Id | protocol violation, connection-fatal, on a frame that names a request | with the frame kind that gives it a meaning |
@@ -162,9 +167,9 @@ kind row decides what that assignment takes.
 ### Growth Without a Capability
 
 Three spaces grow without a capability and without a new protocol version.
-This revision assigns no value in the two metadata spaces and assigns only
-the handshake and the five ungated operations in the opcode space, so every
-other value of each space is available to a later revision.
+This revision assigns two identifiers in the optional metadata space and
+assigns only the handshake and the five ungated operations in the opcode
+space, so every other value of each space is available to a later revision.
 
 The opcode space grows at the cost of one refused request. Assigning an
 Opcode Later states it: a peer built on this revision answers an opcode it
@@ -191,11 +196,14 @@ assigns a value in one of them only behind a capability, and a peer that
 did not negotiate that capability never receives the value.
 
 Three of them carry assignments this revision made. Result Codes assigns
-three result codes, The Error Class Registry assigns nine error classes,
-and Frame Kinds assigns three frame kinds. Each of the three reserves the
-rest of its space. Assigning a Result Code Later states the treatment for
-the result code space, and states what a later revision does when the new
-value replaces an answer a peer without the capability is still owed.
+three result codes, The Error Class Registry assigns eleven error classes,
+and Frame Kinds assigns four frame kinds. Each of the three reserves the
+rest of its space. This revision assigns the frame kind and the two error
+classes behind the three capabilities it assigns, and a peer that did not
+negotiate one never receives the value it gates. Assigning a Result Code
+Later states the treatment for the result code space, and states what a
+later revision does when the new value replaces an answer a peer without
+the capability is still owed.
 
 The fourth is `flags`, and this revision assigns no bit of it, because it
 defines no behavior a flag would carry. Flags states why the field holds
@@ -227,24 +235,30 @@ carries the same authority as the prose it exercises.
 | an optional metadata identifier this revision does not assign | `metadata/unassigned-optional-identifier-skipped` |
 | a required metadata identifier this revision does not assign | `metadata/unassigned-required-identifier-refused` |
 | `request id` 0 on a frame that names a request | `correlation/request-frame-with-the-reserved-id` |
+| a non-zero `code` on a kind that assigns none | `header/withdrawal-frame-with-a-nonzero-code-refused` |
+| a value length the assigned optional identifier does not take | `metadata/deadline-with-a-wrong-length-value-skipped` |
+| an unassigned value of the request class byte | `metadata/request-class-value-not-assigned-skipped` |
+| a gated frame kind on a connection without its capability | `capabilities/withdrawal-without-cancellation-refused` |
+| a gated metadata entry on a connection without its capability | `metadata/deadline-without-the-capability-skipped` |
 
 ## The Capability Identifier Space
 
 Capabilities defines the capability identifier domain over its whole
 width, the entry layout, and the offer and acceptance rules. This revision
-assigns no identifier in that domain, so the accepted set is empty on
-every connection and nothing is gated.
+assigns `0x0002` cancellation, `0x0004` deadlines and `0x0005` request
+classes, each together with the surface it gates.
 
 The domain grows by an assignment alone: a receiver ignores an identifier
 it does not assign and produces no failure, so a later revision assigns an
 identifier together with the surface it gates without invalidating a peer
-built on this revision. That is the mechanism the four spaces whose rule
-closes the connection need. From the revision that assigns an identifier,
-a new frame kind, flag, result code or error class grows behind it, and a
-peer that did not negotiate the identifier never receives the value.
+built on this revision. That is the mechanism the spaces whose rule closes
+the connection need. A new frame kind, flag, result code or error class
+grows behind an assigned identifier, and a peer that did not negotiate the
+identifier never receives the value.
 
 The three spaces that grow without a capability are open from this
 revision onward: the opcode space and both ranges of the metadata
-identifier space. A later revision adds an operation, or adds metadata to
-a frame of any kind, with an assignment alone. It adds an outcome, a
-failure, a frame kind or a flag only with a capability.
+identifier space. This revision uses the metadata spaces: it adds the
+deadline and the request class with an assignment alone. A later revision
+adds a further operation, or a further metadata entry, the same way. It
+adds an outcome, a failure, a frame kind or a flag only with a capability.

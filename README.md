@@ -11,19 +11,18 @@ It is not documentation of the RP-1 server, and it is not an SDK guide.
 
 ## Status
 
-Revision v0.5.1 defines protocol version 0 at the framing, codec,
-connection and operation surface. Every document of that revision carries
-the status `draft`.
+Revision v0.6.0 defines protocol version 0 at the framing, codec,
+connection, operation and request lifetime surface. Every document of that
+revision carries the status `draft`.
 
 From that revision an implementer writes an encoder and a decoder for
 every frame kind it assigns, completes the handshake, negotiates a version
-and the connection bounds, and runs the five ungated operations. The
-revision assigns no capability identifier, and it defines no conformance
-layer, so an implementation of it runs the ungated operations and no gated
-one.
+and the connection bounds, runs the five ungated operations, and negotiates
+the three capabilities that bound a request with a deadline, mark it with a
+class, and withdraw it. The revision defines no conformance layer.
 
 A draft contract changes without the treatment a classified change
-carries. An implementation built against revision v0.5.1 is built at the
+carries. An implementation built against revision v0.6.0 is built at the
 implementer's own risk, and pins the revision it was built against.
 
 ## Scope

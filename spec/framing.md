@@ -2,7 +2,7 @@
 title: Framing
 description: The byte order, the frame header, the frame kinds protocol version 0 assigns, the flags field, the length arithmetic a receiver runs before it allocates, and the order in which it admits a frame.
 protocol_version: 0
-revision: v0.5.1
+revision: v0.6.0
 status: draft
 order: 2
 ---
@@ -16,9 +16,9 @@ header, the frame kinds protocol version 0 assigns and the direction each
 one travels, the flags field, the arithmetic a receiver runs to learn a
 frame's total length, and the order in which a receiver admits a frame.
 
-It does not define what any value the `code` field carries means. Each of
-the three spaces that field draws from is defined in the section that owns
-it.
+It does not define what any value the `code` field carries means. Each
+space the field draws from, and the rule for a frame kind that assigns it
+no meaning, is defined in the section that owns it.
 
 ## Byte Order
 
@@ -86,9 +86,29 @@ Flags states the whole domain of the field and the rule for every value.
 | REQUEST | the opcode | Opcodes |
 | RESPONSE | the result code | Result Codes |
 | ERROR | the error class | The Error Class Registry |
+| WITHDRAWAL | no meaning: the field is reserved and carries zero | The Control Code on a Kind That Assigns None |
 
-Every frame kind this revision assigns draws `code` from a space, so no
-frame kind it assigns leaves the field without a meaning.
+A frame kind whose row above states that `code` carries no meaning assigns
+the field no meaning. The Control Code on a Kind That Assigns None states
+the rule for every such kind.
+
+### The Control Code on a Kind That Assigns None
+
+A frame kind that assigns `code` no meaning reserves the field. The field
+is two bytes wide on that kind as it is on every frame.
+
+A sender MUST set `code` to zero on such a kind. A receiver that meets a
+non-zero `code` on such a kind MUST treat the frame as a protocol
+violation and close the connection. Frame Admission Order places this
+check at step 13.
+
+This is the rule Flags carries for a reserved fixed-width field. A later
+revision gives `code` a meaning on a kind that assigns it none only behind
+a capability, and a peer that did not negotiate that capability never
+receives the kind.
+
+At this revision the withdrawal frame is the only frame kind that assigns
+`code` no meaning.
 
 ### metadata length
 
@@ -121,13 +141,14 @@ useful one.
 
 `kind` is a `u8`. The whole domain is covered here:
 
-| Value | Kind | Sender |
-|---|---|---|
-| `0x00` | reserved, never valid | none |
-| `0x01` | REQUEST | the client |
-| `0x02` | RESPONSE | the server |
-| `0x03` | ERROR | the server |
-| `0x04..0xFF` | reserved | none |
+| Value | Kind | Sender | Requires capability |
+|---|---|---|---|
+| `0x00` | reserved, never valid | none | none |
+| `0x01` | REQUEST | the client | none |
+| `0x02` | RESPONSE | the server | none |
+| `0x03` | ERROR | the server | none |
+| `0x07` | WITHDRAWAL | the client | cancellation |
+| `0x04..0x06`, `0x08..0xFF` | reserved | none | none |
 
 A peer MUST NOT send a frame whose `kind` this revision does not assign.
 A receiver that meets one MUST treat the frame as a protocol violation and
@@ -214,6 +235,11 @@ the same bytes with different classes.
 This section states the order. The section that owns each check states the
 requirement, names the peer it binds, and states its consequence.
 
+Step 8 carries a second row for the withdrawal frame. The frame's payload
+and metadata region are empty, and Request Lifetime states the rule. The
+check runs before steps 14 and 15, whose failures are request-scoped,
+because a withdrawal produces no frame to carry a request-scoped answer.
+
 ```text
  step  condition                                    class                  scope
     1  fewer than 20 bytes held                     none, requires 20 bytes
@@ -227,14 +253,18 @@ requirement, names the peer it binds, and states its consequence.
        size
     7  fewer bytes held than the total length       none, requires the total length
     8  the metadata region does not fill exactly    malformed request      connection-fatal
+    8  a withdrawal frame is non-empty in its       malformed request      connection-fatal
+       payload or in its metadata region
     9  kind travels from the wrong direction        protocol violation     connection-fatal
    10  request id 0 on a kind that names a request  protocol violation     connection-fatal
    11  a frame opening a request already in flight  protocol violation     connection-fatal
-   12  a frame naming a request not in flight       protocol violation     connection-fatal
+   12  a frame other than a withdrawal naming a    protocol violation     connection-fatal
+       request not in flight
    13  code unassigned for the kind
          REQUEST                                    unsupported operation  request-scoped
          RESPONSE                                   protocol violation     connection-fatal
          ERROR                                      protocol violation     connection-fatal
+         WITHDRAWAL                                 protocol violation     connection-fatal
    14  metadata entries not strictly ascending      invalid argument       request-scoped
    15  a required metadata identifier this          invalid argument       request-scoped
        revision does not assign
@@ -284,9 +314,13 @@ principle that decides which scope a class carries.
 
 Steps 9 to 12 are connection-fatal although the frame boundary is known.
 Each of them leaves the receiver unable to say which request the frame
-belongs to, which is the other half of that principle.
+belongs to, which is the other half of that principle. Step 12 excepts the
+withdrawal frame: Request Lifetime states that a withdrawal naming a
+request id the receiver does not hold produces no failure.
 
-Step 13 is connection-fatal for a RESPONSE and for an ERROR frame, whose
-`code` is the whole of what the frame says, and request-scoped for a
-REQUEST frame, whose request the receiver can name and answer. The section
-that owns each of the three spaces states its own rule.
+Step 13 is connection-fatal for a RESPONSE, an ERROR and a WITHDRAWAL
+frame, whose `code` the receiver cannot use to name a request it owes an
+answer to, and request-scoped for a REQUEST frame, whose request the
+receiver can name and answer. The section that owns each of the three
+spaces states its own rule, and The Control Code on a Kind That Assigns
+None states the withdrawal frame's rule.

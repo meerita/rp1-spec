@@ -1,6 +1,6 @@
 {
   "id": "operations/payload-shorter-than-its-head",
-  "revision": "v0.5.1",
+  "revision": "v0.6.0",
   "protocol_version": 0,
   "clause": "The key and the value",
   "direction": "decode",

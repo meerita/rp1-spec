@@ -1,6 +1,6 @@
 {
   "id": "header/frame-kind-from-the-wrong-direction-request-at-a-client",
-  "revision": "v0.5.1",
+  "revision": "v0.6.0",
   "protocol_version": 0,
   "clause": "Frame Kinds",
   "direction": "decode",

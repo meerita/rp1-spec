@@ -1,6 +1,6 @@
 {
   "id": "errors/the-lowest-assigned-error-class",
-  "revision": "v0.5.1",
+  "revision": "v0.6.0",
   "protocol_version": 0,
   "clause": "Malformed request",
   "direction": "both",

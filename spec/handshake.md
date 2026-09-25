@@ -2,7 +2,7 @@
 title: Handshake
 description: The connection states of protocol version 0, which frames are legal before the handshake completes, the failure a frame outside them produces, the handshake exchange in both directions, and version negotiation.
 protocol_version: 0
-revision: v0.5.1
+revision: v0.6.0
 status: draft
 order: 5
 ---
@@ -197,7 +197,7 @@ one-byte `version` field. A responder MUST NOT state one, and an offerer
 that receives one MUST treat the response as a malformed handshake and
 close the connection.
 
-At revision v0.5.1 the only version this specification defines is 0, so
+At revision v0.6.0 the only version this specification defines is 0, so
 the highest version a conforming responder supports in any range that
 contains 0 is 0. A later revision that defines another protocol version
 adds it to the range a responder supports; the rule above does not change.
@@ -214,11 +214,10 @@ state. A responder that meets a second handshake request MUST treat it as a
 protocol violation and close the connection.
 
 The negotiated protocol version, the negotiated bounds, and the accepted
-capability set are connection-scoped. Capabilities states what the accepted
-set gates, and this revision assigns no capability identifier, so the
-accepted set is empty at this revision and gates nothing. A new connection
-renegotiates every value and inherits nothing from the connection that
-preceded it.
+capability set are connection-scoped. Capabilities states the capability
+identifiers this revision assigns and what the accepted set gates. A new
+connection renegotiates every value and inherits nothing from the
+connection that preceded it.
 
 ## The Terminal State
 

@@ -19,6 +19,91 @@ always produces a new revision.
 Each entry states what changed, whether a peer built against the previous
 revision still conforms, and what such a peer must do when it does not.
 
+## [0.6.0]
+
+Classification: addition. The revision adds the request lifetime surface
+and changes no requirement revision v0.5.1 publishes. A peer built against
+v0.5.1 conforms to v0.5.1 unchanged: it negotiates none of the three
+capabilities, so it never receives the withdrawal frame, the two metadata
+entries or the two error classes this revision assigns.
+
+This revision defines three capability-gated surfaces. A deadline entry
+bounds a request with a relative duration; a request class states an
+advisory scheduling preference; a withdrawal frame stops one request
+without producing a frame of its own. It assigns the three capability
+identifiers, the two optional metadata identifiers, the withdrawal frame
+kind, the two error classes the surfaces produce, and the completion
+certainty of every outcome of the race between a withdrawal and the work.
+
+### Added
+
+- Metadata identifier `0x0001`, the deadline: an optional entry, four
+  little-endian bytes, a `u32` count of microseconds, anchored at the
+  responder's read of the frame. Absence differs from zero: zero states a
+  deadline that has already passed at admission.
+- Metadata identifier `0x0002`, the request class: an optional one-byte
+  entry with the values 0 latency, 1 normal, 2 bulk and 3 background.
+  Absence states normal. A class is a preference and never a guarantee, and
+  server policy wins over it.
+- Frame kind `0x07` WITHDRAWAL, sent by the client: empty payload, empty
+  metadata region and `code` zero. A frame kind that assigns `code` no
+  meaning carries zero, and a non-zero value on such a kind is a protocol
+  violation.
+- Error class `0x0006` deadline exceeded, request-scoped, with the
+  completion certainty that the mutation was not applied.
+- Error class `0x0007` cancelled, request-scoped, with the completion
+  certainty that the mutation was not applied.
+- Capability `0x0002` cancellation, which gates frame kind `0x07`.
+- Capability `0x0004` deadlines, which gates metadata identifier `0x0001`.
+- Capability `0x0005` request classes, which gates metadata identifier
+  `0x0002`.
+- Request Lifetime, at order 10: the deadline anchor and enforcement, the
+  withdrawal, the race rule, and the completion certainty of each outcome.
+- The rule for a frame kind that assigns `code` no meaning.
+
+### Changed
+
+- Extension and Version Policy states the growth treatment of the new
+  spaces and assignments.
+- Behavior for Unknown Input states the rows the new frame kind, metadata
+  entries and error classes create.
+- Scope and Status states the request lifetime surface and removes the
+  limitation that no capability is assigned.
+- Correlation states the withdrawal's exemption from the request-not-in-
+  flight rule.
+- The fixture corpus carries a `capabilities` member, the accepted
+  capability identifiers in force when a frame is decoded.
+- Every document and every fixture states revision v0.6.0. The corpus of
+  revision v0.5.1 is preserved at the tag that published it.
+
+### Added fixtures
+
+- Deadline: `metadata/deadline-entry-encoding`,
+  `metadata/deadline-absent-versus-zero`,
+  `metadata/deadline-with-a-wrong-length-value-skipped`,
+  `metadata/deadline-without-the-capability-skipped`,
+  `capabilities/deadline-offered-and-accepted`,
+  `errors/deadline-exceeded-is-request-scoped`.
+- Request class: `metadata/request-class-entry-encoding`,
+  `metadata/request-class-absent-means-normal`,
+  `metadata/request-class-value-not-assigned-skipped`,
+  `metadata/request-class-without-the-capability-skipped`,
+  `capabilities/request-classes-offered-and-accepted`.
+- Withdrawal and the race: `header/withdrawal-frame-encoding`,
+  `header/withdrawal-frame-with-a-nonzero-code-refused`,
+  `header/withdrawal-frame-with-a-payload-refused`,
+  `header/withdrawal-frame-with-a-metadata-region-refused`,
+  `correlation/withdrawal-naming-an-id-not-in-flight`,
+  `correlation/withdrawal-naming-the-reserved-id`,
+  `correlation/repeated-withdrawal`,
+  `correlation/withdrawal-and-a-committed-write`,
+  `correlation/withdrawal-and-an-uncommitted-write`,
+  `capabilities/withdrawal-without-cancellation-refused`,
+  `errors/cancelled-is-request-scoped`.
+- Gated classes without their capability:
+  `capabilities/deadline-exceeded-without-the-capability-refused`,
+  `capabilities/cancelled-without-the-capability-refused`.
+
 ## [0.5.1]
 
 Classification: clarification. The revision states a requirement that was

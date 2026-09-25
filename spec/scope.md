@@ -1,8 +1,8 @@
 ---
 title: Scope and Status
-description: What revision v0.5.1 of protocol version 0 defines and does not define, with the requirement levels, version axes, terminology, and limitations of the document set.
+description: What revision v0.6.0 of protocol version 0 defines and does not define, with the requirement levels, version axes, terminology, and limitations of the document set.
 protocol_version: 0
-revision: v0.5.1
+revision: v0.6.0
 status: draft
 order: 1
 ---
@@ -12,7 +12,7 @@ order: 1
 ## Scope
 
 This document set defines protocol version 0 of the RP-1 Native Protocol,
-at revision v0.5.1.
+at revision v0.6.0.
 
 It defines the framing and codec surface: how a frame is laid out on the
 wire, what every value a frame carries means, and how a receiver admits or
@@ -21,7 +21,9 @@ occupies, the handshake that moves a connection to a usable state, version
 negotiation, the limits the handshake derives, and the capability
 mechanism. It defines the operation surface: the five ungated operations,
 the request and response payload of each, and the argument encoding they
-share.
+share. It defines the request lifetime surface: the deadline a request may
+carry, the request class, the withdrawal frame, the race between a
+withdrawal and the work, and the completion certainty of each outcome.
 
 This revision defines:
 
@@ -51,8 +53,14 @@ the negotiated maximum frame size and maximum metadata size, with their
 the opcode registry, the five ungated operations, and the request and
   response payload of each
 the argument encoding the operations share, and the validation each runs
+the deadline and the request class metadata entries, and what a request
+  carries when it omits each
+the withdrawal frame kind, and the race between a withdrawal and the work
+the deadline exceeded and cancelled error classes, each with its scope and
+  its completion certainty
 the capability identifier domain, the capability entry layout, and
-  capability negotiation, assigning no capability identifier
+  capability negotiation, assigning cancellation, deadlines and request
+  classes
 the receiver behavior for every input this surface permits
 the extension and version policy for every value space it defines
 ```
@@ -60,8 +68,6 @@ the extension and version policy for every value space it defines
 This revision does not define:
 
 ```text
-a capability identifier, and gated behavior: the registry mechanism is
-  defined and the whole identifier domain is unassigned
 any capability-gated operation, and any operation that needs a capability
 conformance layers, role obligations, and any required minimum
 ```
@@ -70,11 +76,12 @@ An engineer implementing this revision alone writes an encoder and a
 decoder for every frame kind it assigns, completes the handshake, reaches a
 usable connection, and runs the five ungated operations.
 
-This revision defines a usable connection and the five ungated operations.
-Known Limitations states what the revision leaves for a later one and what
-an implementer does in the meantime.
+This revision defines a usable connection, the five ungated operations,
+and the request lifetime surface. Known Limitations states what the
+revision leaves for a later one and what an implementer does in the
+meantime.
 
-Revision v0.5.1 publishes the documents of this set and the fixture corpus
+Revision v0.6.0 publishes the documents of this set and the fixture corpus
 that accompanies them. A fixture carries the same authority as the prose
 it exercises. Supporting material states that it is not normative.
 
@@ -159,32 +166,14 @@ ungated operations carry them, and Operations states the encoding.
 A limitation stated here is a property of this contract. It is not a
 statement about what any implementation has built.
 
-This revision defines a usable connection and the five ungated operations.
-No capability is assigned, so no gated operation exists, and no operation
-in this revision needs one. An implementation of this revision connects,
-negotiates, and runs the five operations.
+This revision defines a usable connection, the five ungated operations,
+and the request lifetime surface. No operation is capability-gated, and no
+operation in this revision needs a capability. An implementation of this
+revision connects, negotiates, runs the five operations, and bounds or
+withdraws a request when the deadlines or cancellation capability is
+accepted.
 
-The first two limitations below follow from the absent capability. The last
-does not: it states which requirement of this revision no fixture of its
-corpus can fail against.
-
-### No capability assigned
-
-What is limited: this revision defines the capability mechanism but
-assigns no capability identifier, so no gated behavior exists and no
-capability can be exercised beyond being offered and accepted.
-
-What this contract provides: the capability identifier domain, the
-capability entry layout, the receiver rule for an unassigned identifier,
-the rule for a value of the wrong length, the rule that a responder never
-accepts a capability the offerer did not offer, and the dependency rule.
-
-What an implementer does: offers no identifier, accepts none, and treats
-an identifier it does not assign by the ignore rule the section that owns
-the capability space states.
-
-What would remove it: a revision that assigns a capability identifier
-together with the surface the identifier gates.
+Each limitation below states a property of this contract.
 
 ### No conformance definition
 

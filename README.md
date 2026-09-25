@@ -11,18 +11,19 @@ It is not documentation of the RP-1 server, and it is not an SDK guide.
 
 ## Status
 
-Revision v0.2.0 defines protocol version 0 at the framing and codec
-surface. Every document of that revision carries the status `draft`.
+Revision v0.3.0 defines protocol version 0 at the framing, codec and
+connection surface. Every document of that revision carries the status
+`draft`.
 
 From that revision an implementer writes an encoder and a decoder for
-every frame kind it assigns, and receiver behavior for every input it
-permits. The revision defines no handshake, no negotiation, no
-capability, no operation, and no conformance layer, so what it produces
-is a codec: it is not a client, and it does not interoperate with a
-deployed peer.
+every frame kind it assigns, completes the handshake, negotiates a version
+and the connection bounds, and reaches a usable connection. The revision
+assigns no capability identifier and no operation other than the
+handshake, and it defines no conformance layer, so an implementation of it
+connects and runs no operation: it is a codec and a handshake.
 
 A draft contract changes without the treatment a classified change
-carries. An implementation built against revision v0.2.0 is built at the
+carries. An implementation built against revision v0.3.0 is built at the
 implementer's own risk, and pins the revision it was built against.
 
 ## Scope

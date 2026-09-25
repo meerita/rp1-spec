@@ -2,9 +2,9 @@
 title: Results
 description: Where a result code appears in a frame, the whole domain of the result code space, the result codes protocol version 0 assigns and the payload of each, what a receiver does with a result code it does not assign, and what a later revision does when it assigns one.
 protocol_version: 0
-revision: v0.2.0
+revision: v0.3.0
 status: draft
-order: 6
+order: 8
 ---
 
 # Results
@@ -24,9 +24,9 @@ The Error Class Registry states that taxonomy separately. Both are read
 from the same field, so a caller tells the two apart by the kind of the
 frame that carried it.
 
-It defines no operation payload. This revision assigns no opcode, so the
-one assigned result code whose payload an operation defines states no
-layout for it.
+It defines no operation payload. Handshake defines the payload the success
+result code carries for the handshake response. For every other operation
+the success payload is defined by the revision that assigns the operation.
 
 ## Result Codes
 
@@ -81,11 +81,13 @@ payload   the answer the operation defines
 The operation ran and produced its answer.
 
 The payload: the operation the request named defines it in full, including
-whether it may be zero bytes. This revision assigns no opcode, so it
-defines no payload for this code and states no length a receiver checks.
-Every value of `payload length` is a legal encoding of a RESPONSE frame
-carrying this code at this revision, within the bound Frame Size Limits
-states.
+whether it may be zero bytes. Handshake defines the payload for the
+handshake response. This revision assigns no other operation, so for every
+other request the revision that assigns the operation defines the success
+payload, and this document states no length a receiver checks for it.
+Within the bound Negotiated maximum frame size states, every value of `payload length`
+is a legal encoding of a RESPONSE frame carrying this code at this
+revision.
 
 A payload of zero bytes under this code is an answer the operation
 produced, and it is not an absent one. Absent is a different result code,

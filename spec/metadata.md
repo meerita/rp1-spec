@@ -2,7 +2,7 @@
 title: Metadata
 description: The metadata region of a frame: where it sits, the entry layout, the order entries appear in, the whole identifier domain, and what a receiver does with an identifier protocol version 0 does not assign.
 protocol_version: 0
-revision: v0.2.0
+revision: v0.3.0
 status: draft
 order: 3
 ---
@@ -17,14 +17,14 @@ domain of the identifier field, and what a receiver does with an entry
 whose identifier this revision does not assign.
 
 It assigns no identifier. Protocol version 0 assigns none at revision
-v0.2.0, and both ranges of the domain are unassigned. What this revision
+v0.3.0, and both ranges of the domain are unassigned. What this revision
 publishes is the region and the rule each range carries, so that a later
 revision assigns an identifier without invalidating a peer built on this
 one.
 
-It does not define the bound on the region's length. Frame Size Limits
-states that bound, the bytes it counts, and what a receiver does with a
-frame that exceeds it.
+It does not define the bound on the region's length. Limits states that
+bound, the bytes it counts, and what a receiver does with a frame that
+exceeds it.
 
 ## The Metadata Region
 
@@ -200,7 +200,9 @@ refused request per frame that carries it to a peer built on this one. The
 connection survives, the receiver reports a class the sender can name, and
 no frame is lost in silence.
 
-At this revision a server does not reach this check. Frame Admission Order
-places the `code` check at step 13, this revision assigns no opcode, and
-every REQUEST frame is refused there for that reason. A client reaches it,
-on a RESPONSE or an ERROR frame carrying a region.
+At this revision a server reaches this check only on a REQUEST frame
+carrying the handshake opcode. Frame Admission Order places the `code`
+check at step 13, and a REQUEST frame carrying any other opcode is refused
+there, so the handshake request is the only request that reaches step 15.
+A client reaches this check on a RESPONSE or an ERROR frame carrying a
+region.

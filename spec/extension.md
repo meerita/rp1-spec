@@ -1,10 +1,10 @@
 ---
 title: Extension and Version Policy
-description: The property that decides whether a change invalidates a peer built on an earlier revision, the treatment every kind of change carries, the growth treatment of every value space protocol version 0 defines at revision v0.2.0, and the fixture that proves each receiver rule those treatments follow from.
+description: The property that decides whether a change invalidates a peer built on an earlier revision, the treatment every kind of change carries, the growth treatment of every value space protocol version 0 defines at revision v0.3.0, and the fixture that proves each receiver rule those treatments follow from.
 protocol_version: 0
-revision: v0.2.0
+revision: v0.3.0
 status: draft
-order: 9
+order: 11
 ---
 
 # Extension and Version Policy
@@ -23,9 +23,9 @@ that section states the rule in full. A reader implements those sections.
 This document states what a later revision may do to the spaces they
 define.
 
-It defines no negotiation and no capability. The Capability Identifier
-Space states what follows from that at this revision, and Known
-Limitations states what it costs an implementer.
+It introduces no requirement about a capability. Capabilities owns the
+capability identifier domain and the offer and acceptance rules, and The
+Capability Identifier Space states how that space grows.
 
 Version Axes states that the protocol version, the server version and the
 SDK version are independent, and that none of the three is derivable from
@@ -151,6 +151,7 @@ including the peer it binds and the consequence of violating it.
 | `identifier` in `0x0000..0x7FFF` | The Optional Range | skipped, and no failure | an assignment alone |
 | `identifier` in `0x8000..0xFFFF` | The Required Range | invalid argument, request-scoped | an assignment alone |
 | `request id` 0 | The Reserved Request Id | protocol violation, connection-fatal, on a frame that names a request | with the frame kind that gives it a meaning |
+| `capability id` | Capabilities | ignored, and no failure | an assignment alone |
 
 The last row is the one space whose growth is not its own. Request id 0
 states that a frame belongs to no request, and which frames may carry it
@@ -161,7 +162,8 @@ kind row decides what that assignment takes.
 ### Growth Without a Capability
 
 Three spaces grow without a capability and without a new protocol version.
-This revision assigns no value in any of them, so the whole of each one is
+This revision assigns no value in the two metadata spaces and assigns only
+the handshake in the opcode space, so every other value of each space is
 available to a later revision.
 
 The opcode space grows at the cost of one refused request. Assigning an
@@ -206,8 +208,8 @@ rule closes the connection costs
 a later revision a capability, and costs every peer built before that
 capability the answer it would have received. This revision therefore
 assigns where deferring is expensive and defers where assigning is cheap,
-which is why it assigns no opcode and no metadata identifier and assigns
-in both code spaces.
+which is why it assigns one opcode, the handshake, and no metadata
+identifier, and assigns in both code spaces.
 
 ## The Fixtures That Prove the Rules
 
@@ -228,20 +230,21 @@ carries the same authority as the prose it exercises.
 
 ## The Capability Identifier Space
 
-This revision defines no exchange that opens a connection and no
-negotiation, so it defines no capability identifier space, assigns no
-identifier in one, and states no rule for an identifier a revision does
-not assign.
+Capabilities defines the capability identifier domain over its whole
+width, the entry layout, and the offer and acceptance rules. This revision
+assigns no identifier in that domain, so the accepted set is empty on
+every connection and nothing is gated.
 
-Every treatment above that names a capability names a mechanism the
-revision that defines negotiation supplies. Until that revision exists,
-the four spaces whose rule closes the connection do not grow: there is
-nothing to gate a new value behind, and a peer built on this revision that
-received one ungated would close the connection.
+The domain grows by an assignment alone: a receiver ignores an identifier
+it does not assign and produces no failure, so a later revision assigns an
+identifier together with the surface it gates without invalidating a peer
+built on this revision. That is the mechanism the four spaces whose rule
+closes the connection need. From the revision that assigns an identifier,
+a new frame kind, flag, result code or error class grows behind it, and a
+peer that did not negotiate the identifier never receives the value.
 
-That is the cost this revision carries, and it is bounded. The three
-spaces that grow without a capability are open from this revision onward,
-and they are the opcode space and both ranges of the metadata identifier
-space. A later revision adds an operation, and adds metadata to a frame of
-any kind, with an assignment alone. It adds an outcome, a failure, a frame
-kind or a flag only with a capability.
+The three spaces that grow without a capability are open from this
+revision onward: the opcode space and both ranges of the metadata
+identifier space. A later revision adds an operation, or adds metadata to
+a frame of any kind, with an assignment alone. It adds an outcome, a
+failure, a frame kind or a flag only with a capability.

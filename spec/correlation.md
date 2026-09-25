@@ -151,6 +151,7 @@ and no further frame names it.
 | RESPONSE | yes |
 | ERROR carrying a request-scoped error class | yes |
 | ERROR carrying a connection-fatal error class | no |
+| WITHDRAWAL | no |
 
 Failure Scope states that a frame carrying a connection-fatal class
 retires no request and that its sender closes the connection after sending

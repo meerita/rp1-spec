@@ -19,6 +19,52 @@ always produces a new revision.
 Each entry states what changed, whether a peer built against the previous
 revision still conforms, and what such a peer must do when it does not.
 
+## [0.4.0]
+
+Classification: defect correction. No clause of protocol version 0
+changes, no wire value a conforming peer emits or accepts changes, and a
+peer built against revision v0.3.0 conforms to this revision unchanged and
+has nothing to do. An implementation that loads the fixture corpus updates
+the revision it expects and picks up the three corrected fixtures.
+
+This revision corrects three fixtures that did not match the clause they
+name. Revision v0.3.0 assigns opcode `0x0001` to the handshake. Three
+fixtures carried `0x0001` as if it were unassigned and expected the
+unsupported operation class, while `lifecycle/repeated-handshake` carries
+the same kind and opcode in the same state and expects a protocol
+violation. The corpus contradicted the opcode registry and contradicted
+itself: no receiver could produce both outcomes for the same kind and
+opcode in the same connection state.
+
+### Fixed
+
+- `operations/unassigned-opcode-refused` now carries opcode `0x0002`, a
+  value the opcode registry leaves unassigned. It keeps its identifier,
+  its clause, its expected unsupported operation class and its
+  request-scoped scope, so it still exercises the receiver rule for an
+  opcode this revision does not assign.
+- `operations/unassigned-opcode-with-a-payload-refused` carries opcode
+  `0x0002` and keeps its four-byte payload, its expected class and its
+  scope, so it still pins that the opcode is refused whatever the payload
+  carries.
+- `metadata/admission-order-code-before-required-identifier` carries
+  opcode `0x0002` and keeps its expected class and scope, so it still
+  pins step 13 before step 15.
+
+### Changed
+
+- Every normative document and every fixture states revision v0.4.0. The
+  corpus of revision v0.3.0 is preserved at the tag that published it.
+
+### Unchanged
+
+Every clause of protocol version 0 that revision v0.3.0 published. The
+frame header, the frame kinds, the admission order, the metadata region,
+correlation, the opcode and capability registries, the result codes, the
+error classes, the bounds and the extension policy are byte for byte the
+contract v0.3.0 published. The requirement levels are unchanged and every
+document still carries the status `draft`.
+
 ## [0.3.0]
 
 Classification: addition. The revision adds the connection surface and

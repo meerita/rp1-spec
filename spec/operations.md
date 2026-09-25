@@ -135,6 +135,33 @@ this revision, within the frame size bound in force. A receiver
 refuses a REQUEST frame carrying an unassigned opcode at step 13 whatever
 its payload carries, and interprets no byte of that payload to decide.
 
+## The Liveness Operation
+
+`PING` is opcode `0x0002`. It asks the responder to answer. It names no
+key, it carries no argument, and it produces no answer beyond the fact that
+the responder served it.
+
+A `PING` request payload is empty. A sender MUST NOT send a `PING` request
+whose payload is not empty. A receiver that meets one MUST treat the frame
+as a malformed request and close the connection, because a payload the
+operation does not define is refused rather than ignored.
+
+A responder answers a `PING` request with a RESPONSE frame carrying the
+success result code and an empty payload.
+
+A `PING` request reaches the success result code and no other result code.
+It never answers the absent result code, because it names no key, and it
+never answers a code a later revision assigns.
+
+A caller concludes from a completed `PING` that the responder served a
+request on the connection and answered it. It concludes nothing about any
+key, because `PING` names none, and nothing about whether any other
+operation is reachable.
+
+A client MAY send `PING` to keep a connection active or to measure a round
+trip. A server MUST serve a `PING` request on any connection in the
+negotiated state, without a capability and without a metadata entry.
+
 ## Assigning an Opcode Later
 
 A later revision assigns an opcode as an addition. It needs neither a

@@ -1,6 +1,6 @@
 {
   "id": "results/success-with-a-zero-byte-payload",
-  "revision": "v0.4.0",
+  "revision": "v0.6.0",
   "protocol_version": 0,
   "clause": "Success",
   "direction": "decode",

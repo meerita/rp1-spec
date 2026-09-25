@@ -11,7 +11,7 @@ It is not documentation of the RP-1 server, and it is not an SDK guide.
 
 ## Status
 
-Revision v0.4.0 defines protocol version 0 at the framing, codec and
+Revision v0.6.0 defines protocol version 0 at the framing, codec and
 connection surface. Every document of that revision carries the status
 `draft`.
 
@@ -23,7 +23,7 @@ handshake, and it defines no conformance layer, so an implementation of it
 connects and runs no operation: it is a codec and a handshake.
 
 A draft contract changes without the treatment a classified change
-carries. An implementation built against revision v0.4.0 is built at the
+carries. An implementation built against revision v0.6.0 is built at the
 implementer's own risk, and pins the revision it was built against.
 
 ## Scope

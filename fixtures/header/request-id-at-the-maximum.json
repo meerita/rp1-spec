@@ -1,6 +1,6 @@
 {
   "id": "header/request-id-at-the-maximum",
-  "revision": "v0.4.0",
+  "revision": "v0.6.0",
   "protocol_version": 0,
   "clause": "The Reserved Request Id",
   "direction": "both",

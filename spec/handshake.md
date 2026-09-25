@@ -2,7 +2,7 @@
 title: Handshake
 description: The connection states of protocol version 0, which frames are legal before the handshake completes, the failure a frame outside them produces, the handshake exchange in both directions, and version negotiation.
 protocol_version: 0
-revision: v0.4.0
+revision: v0.6.0
 status: draft
 order: 5
 ---
@@ -197,7 +197,7 @@ one-byte `version` field. A responder MUST NOT state one, and an offerer
 that receives one MUST treat the response as a malformed handshake and
 close the connection.
 
-At revision v0.4.0 the only version this specification defines is 0, so
+At revision v0.6.0 the only version this specification defines is 0, so
 the highest version a conforming responder supports in any range that
 contains 0 is 0. A later revision that defines another protocol version
 adds it to the range a responder supports; the rule above does not change.

@@ -1,8 +1,8 @@
 ---
 title: Scope and Status
-description: What revision v0.4.0 of protocol version 0 defines and does not define, with the requirement levels, version axes, terminology, and limitations of the document set.
+description: What revision v0.6.0 of protocol version 0 defines and does not define, with the requirement levels, version axes, terminology, and limitations of the document set.
 protocol_version: 0
-revision: v0.4.0
+revision: v0.6.0
 status: draft
 order: 1
 ---
@@ -12,7 +12,7 @@ order: 1
 ## Scope
 
 This document set defines protocol version 0 of the RP-1 Native Protocol,
-at revision v0.4.0.
+at revision v0.6.0.
 
 It defines the framing and codec surface: how a frame is laid out on the
 wire, what every value a frame carries means, and how a receiver admits or
@@ -71,7 +71,7 @@ This revision defines a usable connection and no work a server performs
 beyond the handshake. Known Limitations states what that costs and what an
 implementer does in the meantime.
 
-Revision v0.4.0 publishes the documents of this set and the fixture corpus
+Revision v0.6.0 publishes the documents of this set and the fixture corpus
 that accompanies them. A fixture carries the same authority as the prose
 it exercises. Supporting material states that it is not normative.
 

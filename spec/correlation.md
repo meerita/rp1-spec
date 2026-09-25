@@ -258,8 +258,12 @@ transport delivered the bytes on.
 
 A responder MAY send the terminal frames of the requests in flight at it
 in any order, and that order is not required to be the order the requests
-arrived. An initiator MUST accept a terminal frame for any request in
-flight at the initiator, whatever the order it sent those requests in.
+arrived. A responder is not required to serve the requests in flight at it
+in the order it received them, and the frames it sends for them may
+interleave. An initiator MUST accept a terminal frame for any request in
+flight at the initiator, whatever the order it sent those requests in, and
+MUST accept the frames of several requests in flight at it in any
+interleaving.
 
 A peer that matched by arrival order retires a request against a frame
 that belongs to another request, and reports that frame's content as the

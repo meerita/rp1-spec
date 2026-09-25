@@ -2,7 +2,7 @@
 title: Correlation
 description: Request identity: the field that names a request, the peer that allocates it, its reserved value, the state each peer holds for it, the frame that retires a request, and what a receiver does with a frame it cannot correlate.
 protocol_version: 0
-revision: v0.5.0
+revision: v0.5.1
 status: draft
 order: 4
 ---
@@ -258,8 +258,12 @@ transport delivered the bytes on.
 
 A responder MAY send the terminal frames of the requests in flight at it
 in any order, and that order is not required to be the order the requests
-arrived. An initiator MUST accept a terminal frame for any request in
-flight at the initiator, whatever the order it sent those requests in.
+arrived. A responder is not required to serve the requests in flight at it
+in the order it received them, and the frames it sends for them may
+interleave. An initiator MUST accept a terminal frame for any request in
+flight at the initiator, whatever the order it sent those requests in, and
+MUST accept the frames of several requests in flight at it in any
+interleaving.
 
 A peer that matched by arrival order retires a request against a frame
 that belongs to another request, and reports that frame's content as the

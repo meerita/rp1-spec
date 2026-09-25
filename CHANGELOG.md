@@ -19,6 +19,35 @@ always produces a new revision.
 Each entry states what changed, whether a peer built against the previous
 revision still conforms, and what such a peer must do when it does not.
 
+## [0.5.1]
+
+Classification: clarification. The revision states a requirement that was
+already derivable and changes no requirement revision v0.5.0 publishes. A
+peer built against v0.5.0 conforms to v0.5.0 and to this revision
+unchanged.
+
+This revision states, in the responder's own terms, that a responder is not
+required to serve the requests in flight at it in the order it received
+them, and that the frames it sends for them may interleave. The initiator
+obligation to accept the terminal frames of its requests in any order was
+already published; this revision extends it to any interleaving.
+
+### Added
+
+- The multiplexing freedom in Correlation: a responder is not required to
+  serve the requests in flight at it in the order it received them, and it
+  may interleave the frames it sends for them. An initiator MUST accept the
+  frames of several requests in flight at it in any interleaving.
+- One fixture, `correlation/interleaved-terminal-frames`, with three
+  requests in flight at a client and a terminal frame for the middle one,
+  so a receiver that matched by arrival order retires the wrong request.
+
+### Changed
+
+- Every document and every fixture states revision v0.5.1. The corpus of
+  revision v0.5.0 is preserved at the tag that published it.
+- The corpus is 108 fixtures.
+
 ## [0.5.0]
 
 Classification: addition. The revision adds the opcode registry and the

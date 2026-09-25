@@ -162,6 +162,61 @@ A client MAY send `PING` to keep a connection active or to measure a round
 trip. A server MUST serve a `PING` request on any connection in the
 negotiated state, without a capability and without a metadata entry.
 
+## The Read Operations
+
+`GET` and `EXISTS` read one key. `GET` asks for the key's value, and
+`EXISTS` asks only whether the key is present. Both carry the key in the
+encoding The REQUEST frame payload states.
+
+### GET
+
+`GET` is opcode `0x0003`.
+
+A responder answers a `GET` request with one of three result codes:
+
+| Result code | The answer |
+|---|---|
+| success | the value bytes, which may be zero bytes |
+| absent | zero bytes; the key does not exist |
+| value held outside memory | eight bytes: the logical length of the value the key holds |
+
+A success whose payload is zero bytes states that the key exists and holds
+an empty value. The absent result code states that the key does not exist.
+The two are different frames, and a caller separates them by the result
+code and parses no length to do it. A caller MUST NOT treat a success with a
+zero-byte payload as an absent key.
+
+The value-held-outside-memory result code is not a failure and not an
+answer that carries the value: the key exists and the responder states the
+logical length of its value without carrying a byte of it. A `GET` request
+reaches this code because this revision assigns no capability, and a
+connection that negotiated nothing is a connection the responder can send
+no value fragment to.
+
+A `GET` request reaches the success, absent and value-held-outside-memory
+result codes and no other result code.
+
+A key that does not exist is a result and not a failure. A responder MUST
+answer a `GET` of a key that does not exist with the absent result code and
+MUST NOT answer an error class.
+
+### EXISTS
+
+`EXISTS` is opcode `0x0006`.
+
+A responder answers an `EXISTS` request with the success result code and an
+empty payload when the key is present, and with the absent result code and
+an empty payload when it is not. The result code carries presence; the
+payload is empty in both cases.
+
+An `EXISTS` request asks about the key and never about the representation
+it holds. A responder MUST answer presence for a key whatever
+representation it holds and MUST NOT refuse the request on the ground of
+that representation.
+
+An `EXISTS` request reaches the success and absent result codes and no
+other result code.
+
 ## Assigning an Opcode Later
 
 A later revision assigns an opcode as an addition. It needs neither a

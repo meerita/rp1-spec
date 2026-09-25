@@ -1,6 +1,6 @@
 {
   "id": "metadata/entry-claims-more-than-the-region-holds",
-  "revision": "v0.5.0",
+  "revision": "v0.5.1",
   "protocol_version": 0,
   "clause": "Region Fill",
   "direction": "decode",

@@ -1,6 +1,6 @@
 {
   "id": "operations/key-containing-a-nul-byte",
-  "revision": "v0.5.0",
+  "revision": "v0.5.1",
   "protocol_version": 0,
   "clause": "The key and the value",
   "direction": "decode",

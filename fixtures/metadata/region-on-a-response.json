@@ -1,6 +1,6 @@
 {
   "id": "metadata/region-on-a-response",
-  "revision": "v0.5.0",
+  "revision": "v0.5.1",
   "protocol_version": 0,
   "clause": "The Metadata Region",
   "direction": "decode",

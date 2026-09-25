@@ -1,6 +1,6 @@
 {
   "id": "header/version-field-is-one",
-  "revision": "v0.5.0",
+  "revision": "v0.5.1",
   "protocol_version": 0,
   "clause": "Frame Header",
   "direction": "decode",

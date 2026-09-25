@@ -1,6 +1,6 @@
 {
   "id": "metadata/entries-out-of-order",
-  "revision": "v0.5.0",
+  "revision": "v0.5.1",
   "protocol_version": 0,
   "clause": "Entry Order",
   "direction": "decode",

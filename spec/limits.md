@@ -2,7 +2,7 @@
 title: Limits
 description: The pre-negotiation and negotiated size bounds of protocol version 0, the bytes each counts, the formula that derives each negotiated bound, where a receiver enforces them, and the failure a frame that exceeds one produces.
 protocol_version: 0
-revision: v0.5.0
+revision: v0.5.1
 status: draft
 order: 10
 ---

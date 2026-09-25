@@ -1,6 +1,6 @@
 {
   "id": "limits/metadata-region-at-the-maximum",
-  "revision": "v0.3.0",
+  "revision": "v0.4.0",
   "protocol_version": 0,
   "clause": "The pre-negotiation maximum metadata size",
   "direction": "decode",

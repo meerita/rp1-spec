@@ -2,7 +2,7 @@
 title: Operations
 description: Where an opcode appears in a frame, the whole domain of the opcode space, the opcode protocol version 0 assigns at this revision, what a receiver does with an opcode protocol version 0 does not assign, and what a later revision does when it assigns one.
 protocol_version: 0
-revision: v0.3.0
+revision: v0.4.0
 status: draft
 order: 7
 ---

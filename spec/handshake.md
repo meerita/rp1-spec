@@ -214,11 +214,10 @@ state. A responder that meets a second handshake request MUST treat it as a
 protocol violation and close the connection.
 
 The negotiated protocol version, the negotiated bounds, and the accepted
-capability set are connection-scoped. Capabilities states what the accepted
-set gates, and this revision assigns no capability identifier, so the
-accepted set is empty at this revision and gates nothing. A new connection
-renegotiates every value and inherits nothing from the connection that
-preceded it.
+capability set are connection-scoped. Capabilities states the capability
+identifiers this revision assigns and what the accepted set gates. A new
+connection renegotiates every value and inherits nothing from the
+connection that preceded it.
 
 ## The Terminal State
 

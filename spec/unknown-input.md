@@ -1,8 +1,8 @@
 ---
 title: Behavior for Unknown Input
-description: Every input protocol version 0 permits a peer to receive at revision v0.5.1, in the order a receiver meets them, with the error class and the failure scope each one produces, the section that binds that outcome, and the fixtures that prove it.
+description: Every input protocol version 0 permits a peer to receive at revision v0.6.0, in the order a receiver meets them, with the error class and the failure scope each one produces, the section that binds that outcome, and the fixtures that prove it.
 protocol_version: 0
-revision: v0.5.1
+revision: v0.6.0
 status: draft
 order: 13
 ---

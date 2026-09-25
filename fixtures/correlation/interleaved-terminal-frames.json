@@ -1,6 +1,6 @@
 {
   "id": "correlation/interleaved-terminal-frames",
-  "revision": "v0.5.1",
+  "revision": "v0.6.0",
   "protocol_version": 0,
   "clause": "Correlation Is by Request Id Alone",
   "direction": "decode",

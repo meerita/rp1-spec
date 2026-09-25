@@ -2,7 +2,7 @@
 title: Capabilities
 description: The capability identifier domain of protocol version 0, the entry layout the handshake carries, the receiver rule for an unassigned identifier or a value of the wrong length, the offer and acceptance rules, and the dependencies a capability may declare.
 protocol_version: 0
-revision: v0.5.1
+revision: v0.6.0
 status: draft
 order: 6
 ---

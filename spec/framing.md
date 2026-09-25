@@ -2,7 +2,7 @@
 title: Framing
 description: The byte order, the frame header, the frame kinds protocol version 0 assigns, the flags field, the length arithmetic a receiver runs before it allocates, and the order in which it admits a frame.
 protocol_version: 0
-revision: v0.5.1
+revision: v0.6.0
 status: draft
 order: 2
 ---

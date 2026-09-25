@@ -1,6 +1,6 @@
 {
   "id": "correlation/request-frame-reusing-a-retired-id",
-  "revision": "v0.5.1",
+  "revision": "v0.6.0",
   "protocol_version": 0,
   "clause": "Reusing a Request Id",
   "direction": "decode",
